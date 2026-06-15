@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>바이오 교육 일정</title>
+<style>
+  :root {
+    --bg: #f7f6f3;
+    --surface: #ffffff;
+    --surface2: #f0efe9;
+    --border: #e2e0d8;
+    --border2: #cccab8;
+    --text: #1a1917;
+    --text2: #6b6960;
+    --text3: #a09d92;
+    --purple: #4a42b0;
+    --purple-light: #eeedfc;
+    --purple-text: #3730a3;
+    --green: #2d7d55;
+    --green-light: #e8f5ef;
+    --green-text: #1a5c3a;
+    --red: #b93333;
+    --red-light: #fceaea;
+    --red-text: #8b2020;
+    --amber: #9a6200;
+    --amber-light: #fdf3dc;
+    --amber-text: #7a4d00;
+    --teal: #0d6e5a;
+    --teal-light: #e0f5ef;
+    --teal-text: #085043;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: -apple-system, 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif; font-size: 14px; line-height: 1.6; min-height: 100vh; }
+
+  /* Header */
+  .header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 20px 20px 0; position: sticky; top: 0; z-index: 100; }
+  .header-top { display: flex; align-items: baseline; gap: 10px; margin-bottom: 14px; }
+  .header-title { font-size: 17px; font-weight: 700; letter-spacing: -0.3px; }
+  .header-sub { font-size: 12px; color: var(--text3); }
+  .filter-row { display: flex; gap: 6px; flex-wrap: wrap; padding-bottom: 14px; align-items: center; }
+  .fl { font-size: 11px; color: var(--text3); margin-right: 2px; flex-shrink: 0; }
+  .sep { width: 1px; height: 14px; background: var(--border); margin: 0 4px; flex-shrink: 0; }
+  .fb { font-size: 12px; padding: 4px 10px; border-radius: 999px; border: 1px solid var(--border2); background: var(--surface); color: var(--text2); cursor: pointer; transition: all .15s; user-select: none; -webkit-tap-highlight-color: transparent; }
+  .fb.on { background: var(--purple); color: #fff; border-color: var(--purple); }
+  .fb:hover:not(.on) { border-color: var(--purple); color: var(--purple); }
+
+  /* Stats bar */
+  .stats { display: flex; gap: 12px; padding: 10px 20px; background: var(--surface2); border-bottom: 1px solid var(--border); font-size: 11px; color: var(--text2); flex-wrap: wrap; }
+  .stat-item { display: flex; align-items: center; gap: 4px; }
+  .stat-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+
+  /* Main */
+  .main { max-width: 680px; margin: 0 auto; padding: 16px 16px 40px; }
+
+  /* Date section */
+  .date-sec { margin-bottom: 20px; }
+  .date-hdr { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; padding: 0 2px; }
+  .date-lbl { font-size: 14px; font-weight: 700; color: var(--text); }
+  .date-count { font-size: 11px; color: var(--text3); }
+  .date-line { flex: 1; height: 1px; background: var(--border); }
+
+  /* Event card */
+  .ec { display: flex; gap: 10px; align-items: flex-start; padding: 12px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface); margin-bottom: 6px; cursor: pointer; transition: border-color .15s, box-shadow .15s; -webkit-tap-highlight-color: transparent; user-select: none; }
+  .ec:active { transform: scale(0.99); }
+  .ec.is-checked { border-color: var(--purple); background: #faf9ff; }
+  .ec.is-checked .etitle { text-decoration: line-through; color: var(--text3); }
+
+  /* Checkbox */
+  .chkbox { width: 20px; height: 20px; border-radius: 5px; border: 1.5px solid var(--border2); display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; transition: all .15s; }
+  .chkbox.on { background: var(--purple); border-color: var(--purple); }
+  .chkbox.on::after { content: ""; display: block; width: 11px; height: 6px; border-left: 2px solid #fff; border-bottom: 2px solid #fff; transform: rotate(-45deg) translate(1px, -1px); }
+
+  /* Time block */
+  .tblk { min-width: 80px; text-align: right; flex-shrink: 0; }
+  .ttime { font-size: 12px; color: var(--text2); line-height: 1.5; font-variant-numeric: tabular-nums; }
+  .tdur { font-size: 10px; color: var(--text3); }
+  .treg { font-size: 10px; color: var(--text3); margin-top: 2px; line-height: 1.4; }
+
+  /* Divider */
+  .vdiv { width: 1px; background: var(--border); align-self: stretch; flex-shrink: 0; }
+
+  /* Body */
+  .ebody { flex: 1; min-width: 0; }
+  .etitle { font-size: 13px; font-weight: 600; color: var(--text); line-height: 1.4; margin-bottom: 3px; word-break: keep-all; }
+  .edesc { font-size: 11px; color: var(--text2); line-height: 1.5; }
+  .emeta { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 6px; align-items: center; }
+
+  /* Badges */
+  .badge { font-size: 10px; padding: 2px 7px; border-radius: 999px; font-weight: 500; white-space: nowrap; }
+  .b-type { background: var(--purple-light); color: var(--purple-text); }
+  .b-open { background: var(--green-light); color: var(--green-text); }
+  .b-done { background: var(--teal-light); color: var(--teal-text); }
+  .b-full { background: var(--red-light); color: var(--red-text); }
+  .b-wait { background: var(--amber-light); color: var(--amber-text); }
+  .b-seat { background: var(--surface2); color: var(--text2); }
+
+  /* Empty */
+  .empty { text-align: center; color: var(--text3); font-size: 13px; padding: 40px 20px; }
+
+  /* Download */
+  .dl-wrap { display: flex; justify-content: flex-end; margin-bottom: 16px; }
+  .dl-btn { font-size: 12px; padding: 6px 14px; border-radius: 999px; border: 1px solid var(--border2); background: var(--surface); color: var(--text2); cursor: pointer; display: flex; align-items: center; gap: 5px; transition: all .15s; }
+  .dl-btn:hover { border-color: var(--purple); color: var(--purple); }
+  .dl-btn svg { width: 13px; height: 13px; }
+
+  /* Check summary */
+  .check-bar { background: var(--purple-light); border-radius: 8px; padding: 8px 12px; margin-bottom: 14px; font-size: 12px; color: var(--purple-text); display: none; }
+  .check-bar.show { display: block; }
+
+  @media (max-width: 480px) {
+    .header { padding: 14px 14px 0; }
+    .main { padding: 12px 10px 40px; }
+    .tblk { min-width: 70px; }
+    .ec { padding: 10px; gap: 8px; }
+    .etitle { font-size: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-top">
+    <span class="header-title">바이오 교육 일정</span>
+    <span class="header-sub">인천대학교 오픈 교육 · 2025</span>
+  </div>
+  <div class="filter-row">
+    <span class="fl">유형</span>
+    <button class="fb on" data-f="all">전체</button>
+    <button class="fb" data-f="특강">오픈특강</button>
+    <button class="fb" data-f="랩">오픈랩</button>
+    <div class="sep"></div>
+    <span class="fl">상태</span>
+    <button class="fb on" data-s="all">전체</button>
+    <button class="fb" data-s="open">모집중</button>
+    <button class="fb" data-s="done">신청완료</button>
+    <button class="fb" data-s="wait">대기신청</button>
+    <button class="fb" data-s="full">정원마감</button>
+  </div>
+</div>
+
+<div class="stats" id="stats-bar"></div>
+
+<div class="main">
+  <div class="check-bar" id="check-bar"></div>
+  <div class="dl-wrap">
+    <button class="dl-btn" id="dl-btn">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M8 2v8M5 7l3 3 3-3M3 12h10" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      CSV 저장
+    </button>
+  </div>
+  <div id="root"></div>
+</div>
+
+<script>
+const DATA = [
+  {date:"07.06",time:"09:00",end:"11:00",type:"특강",status:"done",title:"전기영동 입문 (공정개발 QC)",target:"바이오 관심 학부생·취준생",reg:"05.29~06.30",seats:"15/30"},
+  {date:"07.06",time:"11:00",end:"13:00",type:"특강",status:"done",title:"mRNA Process Overview",target:"바이오 취준생·mRNA 모달 미경험 실무자",reg:"05.29~06.30",seats:"27/30"},
+  {date:"07.06",time:"14:00",end:"16:00",type:"특강",status:"done",title:"Formulation & Filling을 통한 완제공정의 이해",target:"취준생·1~2년차 신입",reg:"06.01~06.30",seats:"21/30"},
+  {date:"07.06",time:"16:00",end:"18:00",type:"특강",status:"done",title:"바이오 업계 취업 FAQ & Q&A 및 외국계 기업 특징 안내",target:"바이오 업계 취준생·외국계 기업 희망자",reg:"06.01~06.30",seats:"22/30"},
+  {date:"07.13",time:"09:00",end:"11:00",type:"특강",status:"done",title:"바이오제약사 부서소개",target:"바이오 취준생",reg:"05.31~06.30",seats:"19/30"},
+  {date:"07.13",time:"11:00",end:"13:00",type:"특강",status:"done",title:"바이오제약사의 고과평가",target:"바이오 취준생·1년 미만 고과 평가 미경험자",reg:"05.31~06.30",seats:"18/30"},
+  {date:"07.13",time:"14:00",end:"16:00",type:"특강",status:"done",title:"무균(Aseptic)·멸균(Sterilization)의 실무 적용",target:"바이오 기반 지식 있는 취준생·신입 3년차",reg:"06.01~06.30",seats:"21/30"},
+  {date:"07.13",time:"16:00",end:"18:00",type:"특강",status:"done",title:"실무 예시를 통한 Deviation과 Root cause analysis",target:"바이오 기반 지식 있는 취준생·신입 3년차",reg:"06.01~06.30",seats:"21/30"},
+  {date:"07.19",time:"09:00",end:"11:00",type:"특강",status:"done",title:"벤처투자자 입장에서의 바이오 시장 해석",target:"바이오 취준생",reg:"06.01~06.30",seats:"19/30"},
+  {date:"07.19",time:"11:00",end:"13:00",type:"특강",status:"done",title:"신입사원이 이야기하는 실무 - 배양",target:"바이오 취준생 & 1년 이하 신입",reg:"06.01~06.30",seats:"25/30"},
+  {date:"07.19",time:"14:00",end:"16:00",type:"특강",status:"done",title:"바이오 배양 공정의 이해 - PD to GMP",target:"재학생·취준생",reg:"06.05~06.30",seats:"27/30"},
+  {date:"07.19",time:"16:00",end:"18:00",type:"특강",status:"done",title:"MSAT 업무의 이해 - 실무 Scale up 고려사항",target:"바이오 취준생·바이오 공정 교육 기수료자",reg:"06.04~06.30",seats:"24/30"},
+  {date:"07.25",time:"09:00",end:"13:00",type:"특강",status:"full",title:"GMP 규정의 실무 적용",target:"바이오 취준생",reg:"05.29~06.30",seats:"30/30·대기8"},
+  {date:"07.25",time:"14:00",end:"16:00",type:"특강",status:"full",title:"자소서 및 면접 준비 특강",target:"누구나",reg:"05.29~06.30",seats:"30/30·대기9"},
+  {date:"07.25",time:"16:00",end:"18:00",type:"특강",status:"full",title:"Modality 별 제약사의 특징",target:"바이오 취준생",reg:"05.29~06.30",seats:"30/30·대기4"},
+  {date:"07.26",time:"09:00",end:"11:00",type:"특강",status:"full",title:"GMP 실사 수검 전략 및 사례",target:"바이오 취준생·2년차 이하 실사 무경험 재직자",reg:"05.29~06.30",seats:"30/30·대기2"},
+  {date:"07.26",time:"11:00",end:"13:00",type:"특강",status:"full",title:"GMP 관련 필수 핵심 용어 정리",target:"바이오 취준생·1년 미만 신입급 현업자",reg:"06.01~06.30",seats:"30/30·대기2"},
+  {date:"07.26",time:"14:00",end:"18:00",type:"특강",status:"done",title:"GMP QC 개론 - 이론",target:"바이오 취준생 및 신입급",reg:"05.31~06.30",seats:"29/30"},
+  {date:"08.01",time:"09:00",end:"13:00",type:"랩",status:"open",title:"Buffer & sample prep 실습 (for Chrom. run)",target:"학부생·취준생 등",reg:"06.30~07.30",seats:"0/30"},
+  {date:"08.01",time:"14:00",end:"18:00",type:"랩",status:"open",title:"Aseptic process fluid transfer 실습",target:"취준생 (상세 내용 확인)",reg:"06.30~07.30",seats:"0/30"},
+  {date:"08.02",time:"09:00",end:"13:00",type:"랩",status:"open",title:"공정 크로마토그래피 실습 - 1ml column",target:"학부생·취준생 (크로마토그래피 이론 선행)",reg:"06.30~07.30",seats:"0/20"},
+  {date:"08.02",time:"14:00",end:"18:00",type:"랩",status:"open",title:"공정 크로마토그래피 실습 - XK16/20 run",target:"크로마토그래피 강의 수강 이력자·1ml packing 경험자",reg:"06.30~07.30",seats:"0/10"},
+  {date:"08.04",time:"09:00",end:"13:00",type:"랩",status:"open",title:"UF/DF manual kit (CFF system) 조립 실습",target:"학부생·취준생 등 저연차 QA 등 실무자",reg:"06.30~07.30",seats:"0/30"},
+  {date:"08.04",time:"14:00",end:"18:00",type:"랩",status:"open",title:"Filter Integrity test 실습 (Manual & 장비)",target:"학부생·취준생·JR급 FIT 실무자",reg:"06.30~07.30",seats:"0/30"},
+  {date:"08.06",time:"10:00",end:"13:00",type:"랩",status:"open",title:"인천대 학생 전용 Pilot Process Simulation 실습1",target:"인천대학교 재학생 (바이오 공정 이해 필요)",reg:"07.01~07.15",seats:"0/20"},
+  {date:"08.07",time:"09:00",end:"13:00",type:"랩",status:"open",title:"전기 영동 실습",target:"전기 영동 이론 수강자 우선·약 5인 1개조",reg:"07.20~07.31",seats:"0/30"},
+];
+
+const STORE_KEY = "bio_edu_v2";
+let checked = {};
+try { checked = JSON.parse(localStorage.getItem(STORE_KEY) || "{}"); } catch(e) {}
+
+let fType = "all", fStatus = "all";
+
+function saveChecked() {
+  try { localStorage.setItem(STORE_KEY, JSON.stringify(checked)); } catch(e) {}
+}
+
+function getKey(e) { return e.date + "_" + e.time + "_" + e.title.slice(0,10); }
+
+function getDow(ds) {
+  const [m,d] = ds.split(".").map(Number);
+  return ["일","월","화","수","목","금","토"][new Date(2025,m-1,d).getDay()];
+}
+function getDur(s,e) {
+  const [sh,sm] = s.split(":").map(Number);
+  const [eh,em] = e.split(":").map(Number);
+  const mins = (eh*60+em)-(sh*60+sm);
+  return mins >= 60 ? mins/60+"h" : mins+"m";
+}
+function statusBadge(st) {
+  if(st==="done") return '<span class="badge b-done">신청완료</span>';
+  if(st==="full") return '<span class="badge b-full">정원마감</span>';
+  if(st==="wait") return '<span class="badge b-wait">대기신청</span>';
+  return '<span class="badge b-open">모집중</span>';
+}
+
+function updateStats() {
+  const total = DATA.length;
+  const done = DATA.filter(e=>e.status==="done").length;
+  const open = DATA.filter(e=>e.status==="open").length;
+  const full = DATA.filter(e=>e.status==="full").length;
+  const myChecked = Object.values(checked).filter(Boolean).length;
+  document.getElementById("stats-bar").innerHTML =
+    `<span class="stat-item"><span class="stat-dot" style="background:#0d6e5a"></span>신청완료 ${done}개</span>` +
+    `<span class="stat-item"><span class="stat-dot" style="background:#2d7d55"></span>모집중 ${open}개</span>` +
+    `<span class="stat-item"><span class="stat-dot" style="background:#b93333"></span>정원마감 ${full}개</span>` +
+    `<span class="stat-item" style="margin-left:auto;color:#4a42b0;font-weight:600">✓ 내 체크 ${myChecked}개</span>`;
+
+  const bar = document.getElementById("check-bar");
+  if(myChecked > 0) {
+    const titles = DATA.filter(e=>checked[getKey(e)]).map(e=>e.title);
+    bar.className = "check-bar show";
+    bar.textContent = "✓ 신청 체크: " + titles.join(", ");
+  } else {
+    bar.className = "check-bar";
+  }
+}
+
+function render() {
+  const root = document.getElementById("root");
+  const filtered = DATA.filter(e => {
+    const tm = fType === "all" || e.type === fType;
+    const sm = fStatus === "all" || e.status === fStatus;
+    return tm && sm;
+  });
+
+  if(!filtered.length) {
+    root.innerHTML = '<div class="empty">해당 조건의 교육이 없습니다.</div>';
+    return;
+  }
+
+  const byDate = {};
+  filtered.forEach(e => {
+    if(!byDate[e.date]) byDate[e.date] = [];
+    byDate[e.date].push(e);
+  });
+
+  let html = "";
+  Object.keys(byDate).sort().forEach(date => {
+    const dow = getDow(date);
+    const items = byDate[date].sort((a,b) => a.time.localeCompare(b.time));
+    const [mo, dy] = date.split(".");
+    html += `<div class="date-sec">
+      <div class="date-hdr">
+        <span class="date-lbl">${mo}.${dy} (${dow})</span>
+        <span class="date-count">${items.length}개</span>
+        <div class="date-line"></div>
+      </div>`;
+    items.forEach(e => {
+      const k = getKey(e);
+      const isC = !!checked[k];
+      html += `<div class="ec${isC?" is-checked":""}" data-key="${k}">
+        <div class="chkbox${isC?" on":""}"></div>
+        <div class="tblk">
+          <div class="ttime">${e.time}<br>${e.end}</div>
+          <div class="tdur">${getDur(e.time,e.end)}</div>
+          <div class="treg">신청<br>${e.reg}</div>
+        </div>
+        <div class="vdiv"></div>
+        <div class="ebody">
+          <div class="etitle">${e.title}</div>
+          <div class="edesc">${e.target}</div>
+          <div class="emeta">
+            <span class="badge b-type">${e.type==="특강"?"오픈특강":"오픈랩"}</span>
+            ${statusBadge(e.status)}
+            <span class="badge b-seat">${e.seats}</span>
+          </div>
+        </div>
+      </div>`;
+    });
+    html += `</div>`;
+  });
+  root.innerHTML = html;
+
+  root.querySelectorAll(".ec").forEach(el => {
+    el.addEventListener("click", () => {
+      const k = el.dataset.key;
+      checked[k] = !checked[k];
+      saveChecked();
+      el.classList.toggle("is-checked", checked[k]);
+      el.querySelector(".chkbox").classList.toggle("on", checked[k]);
+      updateStats();
+    });
+  });
+  updateStats();
+}
+
+document.querySelectorAll("[data-f]").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll("[data-f]").forEach(b => b.classList.remove("on"));
+    btn.classList.add("on");
+    fType = btn.dataset.f;
+    render();
+  });
+});
+document.querySelectorAll("[data-s]").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll("[data-s]").forEach(b => b.classList.remove("on"));
+    btn.classList.add("on");
+    fStatus = btn.dataset.s;
+    render();
+  });
+});
+
+document.getElementById("dl-btn").addEventListener("click", () => {
+  const rows = [["날짜","요일","시작","종료","유형","상태","신청기간","정원","제목","대상","내 체크"]];
+  DATA.forEach(e => {
+    const k = getKey(e);
+    rows.push([e.date, getDow(e.date), e.time, e.end,
+      e.type==="특강"?"오픈특강":"오픈랩", e.status, e.reg, e.seats,
+      e.title, e.target, checked[k]?"✓":""]);
+  });
+  const csv = "\uFEFF" + rows.map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(",")).join("\n");
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([csv], {type:"text/csv;charset=utf-8"}));
+  a.download = "바이오교육일정.csv";
+  a.click();
+});
+
+render();
+</script>
+</body>
+</html>
