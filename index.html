@@ -52,9 +52,14 @@
   .date-line { flex: 1; height: 1px; background: var(--border); }
 
   /* ---- LIST VIEW ---- */
-  .ec { display: flex; gap: 10px; align-items: stretch; padding: 12px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface); margin-bottom: 6px; transition: border-color .15s; }
-  .ec.s-applied { border-color: var(--purple); background: #faf9ff; }
-  .ec.s-attended { border-color: var(--teal); background: #f3fbf8; }
+  .ec { border-radius: 10px; border: 1px solid var(--border); background: var(--surface); margin-bottom: 6px; transition: border-color .15s; overflow: hidden; }
+  .ec.s-applied { border-color: var(--purple); }
+  .ec.s-waitlisted { border-color: var(--amber); }
+  .ec.s-attended { border-color: var(--teal); }
+  .ec-head { display: flex; gap: 10px; align-items: stretch; padding: 12px; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+  .ec.s-applied .ec-head { background: #faf9ff; }
+  .ec.s-waitlisted .ec-head { background: #fffdf5; }
+  .ec.s-attended .ec-head { background: #f3fbf8; }
   .ec.s-attended .etitle { color: var(--text2); }
 
   .tblk { min-width: 78px; text-align: right; flex-shrink: 0; }
@@ -63,7 +68,10 @@
   .treg { font-size: 10px; color: var(--text3); margin-top: 2px; line-height: 1.4; }
   .vdiv { width: 1px; background: var(--border); flex-shrink: 0; }
   .ebody { flex: 1; min-width: 0; }
-  .etitle { font-size: 13px; font-weight: 600; color: var(--text); line-height: 1.4; margin-bottom: 3px; word-break: keep-all; }
+  .etitle-row { display: flex; align-items: flex-start; gap: 6px; }
+  .etitle { font-size: 13px; font-weight: 600; color: var(--text); line-height: 1.4; margin-bottom: 3px; word-break: keep-all; flex: 1; }
+  .caret { font-size: 11px; color: var(--text3); transition: transform .2s; flex-shrink: 0; margin-top: 2px; }
+  .ec.open .caret { transform: rotate(180deg); }
   .edesc { font-size: 11px; color: var(--text2); line-height: 1.5; }
   .emeta { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 8px; align-items: center; }
 
@@ -73,9 +81,24 @@
   .b-full { background: var(--red-light); color: var(--red-text); }
 
   .togs { display: flex; gap: 6px; margin-left: 4px; }
-  .tog { font-size: 11px; padding: 3px 10px; border-radius: 999px; border: 1px solid var(--border2); background: var(--surface); color: var(--text2); cursor: pointer; transition: all .15s; display: flex; align-items: center; gap: 3px; -webkit-tap-highlight-color: transparent; user-select: none; }
+  .tog { font-size: 11px; padding: 3px 10px; border-radius: 999px; border: 1px solid var(--border2); background: var(--surface); color: var(--text2); cursor: pointer; transition: all .15s; -webkit-tap-highlight-color: transparent; user-select: none; }
   .tog.on-applied { background: var(--purple); border-color: var(--purple); color: #fff; }
+  .tog.on-waitlisted { background: var(--amber); border-color: var(--amber); color: #fff; }
   .tog.on-attended { background: var(--teal); border-color: var(--teal); color: #fff; }
+
+  /* ---- DETAIL PANEL ---- */
+  .ec-detail { display: none; padding: 0 12px 14px; border-top: 1px solid var(--border); margin-top: -1px; }
+  .ec.open .ec-detail { display: block; }
+  .det-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 14px 0; }
+  .det-cell { background: var(--surface2); border-radius: 8px; padding: 8px 10px; }
+  .det-cell.full { grid-column: 1 / -1; }
+  .det-k { font-size: 10px; font-weight: 700; color: var(--text3); margin-bottom: 2px; }
+  .det-v { font-size: 12px; color: var(--text); line-height: 1.5; white-space: pre-line; }
+  .memo-wrap { margin-top: 12px; }
+  .memo-label { font-size: 11px; font-weight: 700; color: var(--text2); margin-bottom: 5px; display: flex; align-items: center; gap: 5px; }
+  .memo-area { width: 100%; min-height: 60px; border: 1px solid var(--border2); border-radius: 8px; padding: 8px 10px; font-size: 12px; font-family: inherit; color: var(--text); background: var(--surface); resize: vertical; line-height: 1.5; }
+  .memo-area:focus { outline: none; border-color: var(--purple); }
+  .memo-status { font-size: 10px; color: var(--text3); margin-top: 4px; height: 12px; }
 
   .empty { text-align: center; color: var(--text3); font-size: 13px; padding: 40px 20px; }
 
@@ -92,6 +115,7 @@
   .tl-block { position: absolute; border-radius: 6px; padding: 4px 7px; overflow: hidden; font-size: 11px; line-height: 1.3; border: 1px solid transparent; }
   .tl-block.b-none { background: var(--surface2); color: var(--text2); border-color: var(--border2); }
   .tl-block.b-applied { background: var(--purple-light); color: var(--purple-text); border-color: var(--purple); }
+  .tl-block.b-waitlisted { background: var(--amber-light); color: var(--amber-text); border-color: var(--amber); }
   .tl-block.b-attended { background: var(--teal-light); color: var(--teal-text); border-color: var(--teal); }
   .tl-block .bt { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .tl-block .btm { font-size: 9px; opacity: 0.8; font-variant-numeric: tabular-nums; }
@@ -103,8 +127,9 @@
     .header { padding: 14px 14px 0; }
     .main { padding: 12px 10px 40px; }
     .tblk { min-width: 66px; }
-    .ec { padding: 10px; gap: 8px; }
+    .ec-head { padding: 10px; gap: 8px; }
     .etitle { font-size: 12px; }
+    .det-grid { grid-template-columns: 1fr; }
   }
 </style>
 </head>
@@ -129,6 +154,7 @@
     <span class="fl">내 상태</span>
     <button class="fb on" data-s="all">전체</button>
     <button class="fb" data-s="applied">신청함</button>
+    <button class="fb" data-s="waitlisted">대기</button>
     <button class="fb" data-s="attended">수강완료</button>
     <button class="fb" data-s="none">미신청</button>
   </div>
@@ -155,36 +181,38 @@ const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 const YEAR = 2026;
 
 const DATA = [
-  {date:"07.06",time:"09:00",end:"11:00",type:"특강",status:"open",title:"전기영동 입문 (공정개발 QC)",target:"바이오 관심 학부생·취준생",reg:"05.29~06.30"},
-  {date:"07.06",time:"11:00",end:"13:00",type:"특강",status:"open",title:"mRNA Process Overview",target:"바이오 취준생·mRNA 모달 미경험 실무자",reg:"05.29~06.30"},
-  {date:"07.06",time:"14:00",end:"16:00",type:"특강",status:"open",title:"Formulation & Filling을 통한 완제공정의 이해",target:"취준생·1~2년차 신입",reg:"06.01~06.30"},
-  {date:"07.06",time:"16:00",end:"18:00",type:"특강",status:"open",title:"바이오 업계 취업 FAQ & Q&A 및 외국계 기업 특징 안내",target:"바이오 업계 취준생·외국계 기업 희망자",reg:"06.01~06.30"},
-  {date:"07.13",time:"09:00",end:"11:00",type:"특강",status:"open",title:"바이오제약사 부서소개",target:"바이오 취준생",reg:"05.31~06.30"},
-  {date:"07.13",time:"11:00",end:"13:00",type:"특강",status:"open",title:"바이오제약사의 고과평가",target:"바이오 취준생·1년 미만 고과 평가 미경험자",reg:"05.31~06.30"},
-  {date:"07.13",time:"14:00",end:"16:00",type:"특강",status:"open",title:"무균(Aseptic)·멸균(Sterilization)의 실무 적용",target:"바이오 기반 지식 있는 취준생·신입 3년차",reg:"06.01~06.30"},
-  {date:"07.13",time:"16:00",end:"18:00",type:"특강",status:"open",title:"실무 예시를 통한 Deviation과 Root cause analysis",target:"바이오 기반 지식 있는 취준생·신입 3년차",reg:"06.01~06.30"},
-  {date:"07.19",time:"09:00",end:"11:00",type:"특강",status:"open",title:"벤처투자자 입장에서의 바이오 시장 해석",target:"바이오 취준생",reg:"06.01~06.30"},
-  {date:"07.19",time:"11:00",end:"13:00",type:"특강",status:"open",title:"신입사원이 이야기하는 실무 - 배양",target:"바이오 취준생 & 1년 이하 신입",reg:"06.01~06.30"},
-  {date:"07.19",time:"14:00",end:"16:00",type:"특강",status:"open",title:"바이오 배양 공정의 이해 - PD to GMP",target:"재학생·취준생",reg:"06.05~06.30"},
-  {date:"07.19",time:"16:00",end:"18:00",type:"특강",status:"open",title:"MSAT 업무의 이해 - 실무 Scale up 고려사항",target:"바이오 취준생·바이오 공정 교육 기수료자",reg:"06.04~06.30"},
-  {date:"07.25",time:"09:00",end:"13:00",type:"특강",status:"full",title:"GMP 규정의 실무 적용",target:"바이오 취준생",reg:"05.29~06.30"},
-  {date:"07.25",time:"14:00",end:"16:00",type:"특강",status:"full",title:"자소서 및 면접 준비 특강",target:"누구나",reg:"05.29~06.30"},
-  {date:"07.25",time:"16:00",end:"18:00",type:"특강",status:"full",title:"Modality 별 제약사의 특징",target:"바이오 취준생",reg:"05.29~06.30"},
-  {date:"07.26",time:"09:00",end:"11:00",type:"특강",status:"full",title:"GMP 실사 수검 전략 및 사례",target:"바이오 취준생·2년차 이하 실사 무경험 재직자",reg:"05.29~06.30"},
-  {date:"07.26",time:"11:00",end:"13:00",type:"특강",status:"full",title:"GMP 관련 필수 핵심 용어 정리",target:"바이오 취준생·1년 미만 신입급 현업자",reg:"06.01~06.30"},
-  {date:"07.26",time:"14:00",end:"18:00",type:"특강",status:"open",title:"GMP QC 개론 - 이론",target:"바이오 취준생 및 신입급",reg:"05.31~06.30"},
-  {date:"08.01",time:"09:00",end:"13:00",type:"랩",status:"open",title:"Buffer & sample prep 실습 (for Chrom. run)",target:"학부생·취준생 등",reg:"06.30~07.30"},
-  {date:"08.01",time:"14:00",end:"18:00",type:"랩",status:"open",title:"Aseptic process fluid transfer 실습",target:"취준생 (상세 내용 확인)",reg:"06.30~07.30"},
-  {date:"08.02",time:"09:00",end:"13:00",type:"랩",status:"open",title:"공정 크로마토그래피 실습 - 1ml column",target:"학부생·취준생 (크로마토그래피 이론 선행)",reg:"06.30~07.30"},
-  {date:"08.02",time:"14:00",end:"18:00",type:"랩",status:"open",title:"공정 크로마토그래피 실습 - XK16/20 run",target:"크로마토그래피 강의 수강 이력자·1ml packing 경험자",reg:"06.30~07.30"},
-  {date:"08.04",time:"09:00",end:"13:00",type:"랩",status:"open",title:"UF/DF manual kit (CFF system) 조립 실습",target:"학부생·취준생 등 저연차 QA 등 실무자",reg:"06.30~07.30"},
-  {date:"08.04",time:"14:00",end:"18:00",type:"랩",status:"open",title:"Filter Integrity test 실습 (Manual & 장비)",target:"학부생·취준생·JR급 FIT 실무자",reg:"06.30~07.30"},
-  {date:"08.06",time:"10:00",end:"13:00",type:"랩",status:"open",title:"인천대 학생 전용 Pilot Process Simulation 실습1",target:"인천대학교 재학생 (바이오 공정 이해 필요)",reg:"07.01~07.15"},
-  {date:"08.07",time:"09:00",end:"13:00",type:"랩",status:"open",title:"전기 영동 실습",target:"전기 영동 이론 수강자 우선·약 5인 1개조",reg:"07.20~07.31"},
+  {date:"07.06",time:"09:00",end:"11:00",type:"특강",status:"open",title:"전기영동 입문 (공정개발 QC)",target:"바이오에 관심을 둔 학부생, 취준생",reg:"05.29~06.30",teacher:"",summary:"추후 오픈될 실습 강의의 선수 과목으로, 전기영동에 대한 이론을 학습한다.",topics:"",place:"인천대학교 강의실"},
+  {date:"07.06",time:"11:00",end:"13:00",type:"특강",status:"open",title:"mRNA Process Overview",target:"바이오 취준생, mRNA 모달 미경험 실무자",reg:"05.29~06.30",teacher:"",summary:"mRNA modality의 생산 공정에 대한 overview 및 공정 개발 과정에서의 특징, 시장 상황을 알아본다.",topics:"",place:"인천대학교 송도캠"},
+  {date:"07.06",time:"14:00",end:"16:00",type:"특강",status:"open",title:"Formulation & Filling을 통한 완제공정의 이해",target:"취준생, 1~2년차 신입",reg:"06.01~06.30",teacher:"",summary:"F&F 공정의 전반을 이해하고 GMP 관점에서의 중요성을 강조하여 직무 특성을 파악한다.",topics:"",place:"인천대학교 강의실"},
+  {date:"07.06",time:"16:00",end:"18:00",type:"특강",status:"open",title:"바이오 업계 취업 FAQ & Q&A 및 외국계 기업 특징 안내",target:"바이오 업계 취준생, 외국계 기업 희망자",reg:"06.01~06.30",teacher:"",summary:"취업 상담에서 중복적으로 나온 질문과 답을 안내하고, 추가 질의 응답을 진행하여 취업에 대한 이해를 높인다. 또한 외국계 제약사 현업자로서 외국계에 대한 특징을 안내한다.",topics:"",place:"인천대학교 강의실"},
+  {date:"07.13",time:"09:00",end:"11:00",type:"특강",status:"open",title:"바이오제약사 부서소개",target:"바이오 취준생",reg:"05.31~06.30",teacher:"",summary:"바이오제약사의 각 부서의 기능 소개 및 R&R 소개. Job posting에서의 핵심을 파악하여 전략적 취업 가능.",topics:"",place:"인천대학교 강의실"},
+  {date:"07.13",time:"11:00",end:"13:00",type:"특강",status:"open",title:"바이오제약사의 고과평가",target:"바이오 취준생, 1년 미만의 고과 평가 미경험 재직자",reg:"05.31~06.30",teacher:"",summary:"고과평가 학습을 통해 회사원으로서의 자세를 배운다. 커리어 관리 (레퍼런스 체크, 평판)에 대한 내용을 배운다.",topics:"",place:"인천대학교 강의실"},
+  {date:"07.13",time:"14:00",end:"16:00",type:"특강",status:"open",title:"무균(Aseptic)·멸균(Sterilization)의 실무 적용",target:"바이오 기반 지식이 있는 취준생, 신입 3년차 이하",reg:"06.01~06.30",teacher:"",summary:"Aseptic과 Sterilization을 학습하고 이 개념이 실무에 어떻게 적용되고 응용되는지를 확인한다.",topics:"",place:"인천대학교 강의실"},
+  {date:"07.13",time:"16:00",end:"18:00",type:"특강",status:"open",title:"실무 예시를 통한 Deviation과 Root cause analysis",target:"바이오 기반 지식이 있는 취준생, 신입 3년차 이하",reg:"06.01~06.30",teacher:"",summary:"현장에서 발생 가능한 Deviation을 어떻게 논리적으로 접근하고 대처하는지를 학습하여 실무를 이해한다.",topics:"",place:"인천대학교 강의실"},
+  {date:"07.19",time:"09:00",end:"11:00",type:"특강",status:"open",title:"벤처투자자 입장에서의 바이오 시장 해석",target:"바이오 취준생",reg:"06.01~06.30",teacher:"",summary:"회사를 보는 눈을 키우자! 벤처 투자사의 입장에서 바라보는 세포/유전자 치료제 시장 동향과 바이오 의약품 가치를 평가하는 방법, 그리고 여러 바이오 의약품의 비즈니스 모델을 알아본다.",topics:"",place:"인천대학교 강의실"},
+  {date:"07.19",time:"11:00",end:"13:00",type:"특강",status:"open",title:"신입사원이 이야기하는 실무 - 배양",target:"바이오 취준생 & 1년 이하의 신입",reg:"06.01~06.30",teacher:"",summary:"배양 신입 사원으로서 겪은, 하루/일주일/한달/일년 등의 루틴한 업무를 통해 실무 배양 업무에 대한 이해를 높인다.",topics:"",place:"인천대학교 강의실"},
+  {date:"07.19",time:"14:00",end:"16:00",type:"특강",status:"open",title:"바이오 배양 공정의 이해 - PD to GMP",target:"재학생, 취준생",reg:"06.05~06.30",teacher:"",summary:"바이오 의약품 생산 공정의 시작인 배양 공정에 대한 전반적인 학습으로 개발에서 생산까지의 배양 실무를 이해한다.",topics:"",place:"인천대학교 강의실"},
+  {date:"07.19",time:"16:00",end:"18:00",type:"특강",status:"open",title:"MSAT 업무의 이해 - 실무 Scale up 고려사항",target:"바이오 취준생, 바이오 공정 교육 기수료자, 진학 예정자",reg:"06.04~06.30",teacher:"",summary:"GMP 기술이전 시, 설비 차이로 인한 공정 risk 이해 및 실무 평가 방법 소개. 이를 통해 scale up 수행시 발생될 수 있는 issue에 대한 solution 제공.",topics:"",place:"인천대학교 강의실"},
+  {date:"07.25",time:"09:00",end:"13:00",type:"특강",status:"full",title:"GMP 규정의 실무 적용",target:"바이오 취준생",reg:"05.29~06.30",teacher:"",summary:"GMP 규정 소개, 식약처 실사 지적사항 소개, 규정의 실무 적용 사례 소개.",topics:"",place:"인천대학교 송도캠 강의실 (TBU)"},
+  {date:"07.25",time:"14:00",end:"16:00",type:"특강",status:"full",title:"자소서 및 면접 준비 특강",target:"누구나",reg:"05.29~06.30",teacher:"",summary:"업계 종사자가 알려주는 업계 특이적인 자소서 및 면접 준비 특강.",topics:"1. 자소서 작성법\n2. 면접 준비",place:"인천대학교 송도캠"},
+  {date:"07.25",time:"16:00",end:"18:00",type:"특강",status:"full",title:"Modality 별 제약사의 특징",target:"바이오 취준생",reg:"05.29~06.30",teacher:"",summary:"강사님의 경력에 따른 회사의 차이를 통해 제약사의 특징을 구별할 수 있는 역량을 키운다. 이를 통해 스스로가 원하는 제약사의 회사상을 정의할 수 있다.",topics:"",place:"인천대학교 송도캠"},
+  {date:"07.26",time:"09:00",end:"11:00",type:"특강",status:"full",title:"GMP 실사 수검 전략 및 사례",target:"바이오 취준생, 2년차 이하 실사 무경험 재직자",reg:"05.29~06.30",teacher:"",summary:"심사관의 경험과 입장을 통한 GMP 실사 관련 주요점을 설명한다.",topics:"",place:"인천대학교 송도캠"},
+  {date:"07.26",time:"11:00",end:"13:00",type:"특강",status:"full",title:"GMP 관련 필수 핵심 용어 정리",target:"바이오 취준생, 1년 미만 신입급 현업자",reg:"06.01~06.30",teacher:"",summary:"수없이 많은 GMP 관련 용어들을 중요도 순으로, 그리고 연계되는 관계를 통해 쉽게 학습하고 이해한다.",topics:"",place:"인천대학교 강의실"},
+  {date:"07.26",time:"14:00",end:"18:00",type:"특강",status:"open",title:"GMP QC 개론 - 이론",target:"바이오 취준생 및 신입급",reg:"05.31~06.30",teacher:"",summary:"바이오 제약사의 QC와 관련한 전체를 정리하고, 세부 QC 직무에 대한 이해를 통해 효과적인 취업 전략을 짤 수 있다.",topics:"",place:"인천대학교 강의실"},
+  {date:"08.01",time:"09:00",end:"13:00",type:"랩",status:"open",title:"Buffer & sample prep 실습 (for Chrom. run)",target:"학부생, 취준생 등",reg:"06.30~07.30",teacher:"Sartorius",summary:"Chrom.에 사용될 buffer와 sample을 직접 조제해 본다. (weighing, pH titration, filtration 등 사용) peristaltic pump 사용에 대한 실무를 경험한다.",topics:"",place:"인천대학교 강의실/실습실"},
+  {date:"08.01",time:"14:00",end:"18:00",type:"랩",status:"open",title:"Aseptic process fluid transfer 실습",target:"",reg:"06.30~07.30",teacher:"Sartorius",summary:"Single use bag과 sterile filter 그리고 TPE tubing & welder를 이용하여 시료의 무균 transfer set을 조립하고, peristaltic pump를 이용한 공정을 예측하고 확인한다.",topics:"",place:"인천대학교 강의실/실습실"},
+  {date:"08.02",time:"09:00",end:"13:00",type:"랩",status:"open",title:"공정 크로마토그래피 실습 - 1ml column",target:"학부생, 취준생 등\n크로마토그래피 이론 선행 학습자",reg:"06.30~07.30",teacher:"Sartorius",summary:"FPLC 장비와 1ml pre-pack column을 이용하여 간단한 단백질 분리 실습을 진행한다. 최대 5인 1개조 운영 예정.",topics:"> FPLC 장비의 구조 이해\n> 1ml pre-pack column 연결 및 EQ run\n> 단백 분리 실습\n> 장비 cleaning",place:"인천대학교 강의실 혹은 실습실"},
+  {date:"08.02",time:"14:00",end:"18:00",type:"랩",status:"open",title:"공정 크로마토그래피 실습 - XK16/20 run",target:"크로마토그래피 강의 수강 이력자\n1ml packing 실습 수료자",reg:"06.30~07.30",teacher:"Sartorius",summary:"XK 16/20을 packing 하고 evaluation을 진행해 본다. 그 후, 간단한 단백 분리 run을 돌려 본다.",topics:"",place:"-"},
+  {date:"08.04",time:"09:00",end:"13:00",type:"랩",status:"open",title:"UF/DF manual kit (CFF system) 조립 실습",target:"학부생, 취준생 등.\n저 연차 QA 등의 실무자로 CFF에 대한 기본 원리 이해가 필요한 현업자.",reg:"06.30~07.30",teacher:"Sartorius",summary:"약 3~4인으로 조를 구성하여 small scale manual UF/DF system을 구성하고 water run을 돌려 본다.",topics:"CFF system P&ID 이해\nCFF system Assembly\nCFF system water run",place:"인천대학교 강의실/실습실"},
+  {date:"08.04",time:"14:00",end:"18:00",type:"랩",status:"open",title:"Filter Integrity test 실습 (Manual & 장비)",target:"학부생, 취준생. JR.급의 FIT 실무자",reg:"06.30~07.30",teacher:"Sartorius",summary:"약 3~4인을 한조로 운영하여 Filter Integrity test를 manual로 구성하여 실험해 보고, GMP 생산 시설에서 사용하는 장비의 시연을 통해 FIT에 대한 이해도를 높인다.",topics:"",place:"인천대학교 강의실/실습실"},
+  {date:"08.06",time:"10:00",end:"13:00",type:"랩",status:"open",title:"인천대 학생 전용 Pilot Process Simulation 실습1",target:"인천대학교 재학생 중, 바이오 공정에 대한 이해가 있는 학생.",reg:"07.01~07.15",teacher:"Sartorius",summary:"주로 시연의 형태로 Pilot scale의 현업 장비를 경험한다. 7월 15일까지 인천대 학생 모집이 미달 될 경우, 타 학생들에게도 오픈 예정. 7월 16일~모집 완료까지.",topics:"1. 2L, 20L, 50L 바이오리액터 실물을 확인하고 조작해본다.\n2. Pilot scale의 Clarification system을 조립하고 이해한다.\n3. Packing 된 Column (50mm ID)의 buffer run 경험.\n4. Pilot scale의 UF/DF 장비의 water run을 경험한다.",place:"인천대학교"},
+  {date:"08.07",time:"09:00",end:"13:00",type:"랩",status:"open",title:"전기 영동 실습",target:"전기 영동 이론 수강자 우선 대상. 약 5인 1개조로 실습 예정.",reg:"07.20~07.31",teacher:"BioGTP",summary:"전기 영동 실습을 진행해 본다.",topics:"",place:"인천대학교"},
 ];
 
 let state = {};
+let memoTimers = {};
 let fType = "all", fStatus = "all", view = "timeline";
+let openCards = {};
 
 function setSync(s, t) {
   const b = document.getElementById("sync-badge");
@@ -194,10 +222,10 @@ function setSync(s, t) {
 
 async function loadState() {
   try {
-    const { data, error } = await sb.from("edu_checks").select("edu_key, applied, attended");
+    const { data, error } = await sb.from("edu_checks").select("edu_key, applied, attended, waitlisted, memo");
     if (error) throw error;
     state = {};
-    data.forEach(r => { state[r.edu_key] = { applied: !!r.applied, attended: !!r.attended }; });
+    data.forEach(r => { state[r.edu_key] = { applied: !!r.applied, attended: !!r.attended, waitlisted: !!r.waitlisted, memo: r.memo || "" }; });
     setSync("ok", "동기화됨");
   } catch (e) {
     console.error("불러오기 실패:", e);
@@ -208,12 +236,14 @@ async function loadState() {
 async function saveState(key, st) {
   try {
     const { error } = await sb.from("edu_checks")
-      .upsert({ edu_key: key, applied: st.applied, attended: st.attended, updated_at: new Date().toISOString() });
+      .upsert({ edu_key: key, applied: st.applied, attended: st.attended, waitlisted: st.waitlisted, memo: st.memo, updated_at: new Date().toISOString() });
     if (error) throw error;
     setSync("ok", "동기화됨");
+    return true;
   } catch (e) {
     console.error("저장 실패:", e);
     setSync("err", "저장 실패");
+    return false;
   }
 }
 
@@ -222,15 +252,19 @@ function getKey(e) { return e.date + "_" + e.time + "_" + e.title.slice(0,10); }
 function effState(e) {
   const k = getKey(e);
   if (state[k]) return state[k];
-  return { applied: e.date.startsWith("07"), attended: false };
+  return { applied: e.date.startsWith("07") && e.status !== "full", waitlisted: e.date.startsWith("07") && e.status === "full", attended: false, memo: "" };
+}
+
+function ensureState(e) {
+  const k = getKey(e);
+  if (!state[k]) state[k] = { ...effState(e) };
+  return state[k];
 }
 
 function toggle(e, field) {
-  const k = getKey(e);
-  const cur = state[k] ? { ...state[k] } : { applied: e.date.startsWith("07"), attended: false };
+  const cur = ensureState(e);
   cur[field] = !cur[field];
-  state[k] = cur;
-  saveState(k, cur);
+  saveState(getKey(e), cur);
 }
 
 function getDow(ds) {
@@ -244,6 +278,18 @@ function statusBadge(st) {
   if(st==="full") return '<span class="badge b-full">정원마감</span>';
   return '<span class="badge b-open">모집중</span>';
 }
+function stateClass(s) {
+  if (s.attended) return "s-attended";
+  if (s.applied) return "s-applied";
+  if (s.waitlisted) return "s-waitlisted";
+  return "";
+}
+function blockClass(s) {
+  if (s.attended) return "b-attended";
+  if (s.applied) return "b-applied";
+  if (s.waitlisted) return "b-waitlisted";
+  return "b-none";
+}
 
 function filtered() {
   return DATA.filter(e => {
@@ -251,9 +297,10 @@ function filtered() {
     let sm = true;
     if (fStatus !== "all") {
       const s = effState(e);
-      if (fStatus === "applied") sm = s.applied && !s.attended;
+      if (fStatus === "applied") sm = s.applied;
+      else if (fStatus === "waitlisted") sm = s.waitlisted;
       else if (fStatus === "attended") sm = s.attended;
-      else if (fStatus === "none") sm = !s.applied && !s.attended;
+      else if (fStatus === "none") sm = !s.applied && !s.attended && !s.waitlisted;
     }
     return tm && sm;
   });
@@ -261,18 +308,40 @@ function filtered() {
 
 function updateStats() {
   const total = DATA.length;
-  let nApplied = 0, nAttended = 0;
-  DATA.forEach(e => { const s = effState(e); if(s.attended) nAttended++; else if(s.applied) nApplied++; });
+  let nA=0, nW=0, nAt=0;
+  DATA.forEach(e => { const s = effState(e); if(s.attended) nAt++; else if(s.applied) nA++; else if(s.waitlisted) nW++; });
   document.getElementById("stats-bar").innerHTML =
     `<span class="stat-item"><span class="stat-dot" style="background:#cccab8"></span>전체 ${total}개</span>` +
-    `<span class="stat-item"><span class="stat-dot" style="background:#4a42b0"></span>신청함 ${nApplied}개</span>` +
-    `<span class="stat-item"><span class="stat-dot" style="background:#0d6e5a"></span>수강완료 ${nAttended}개</span>`;
+    `<span class="stat-item"><span class="stat-dot" style="background:#4a42b0"></span>신청 ${nA}개</span>` +
+    `<span class="stat-item"><span class="stat-dot" style="background:#9a6200"></span>대기 ${nW}개</span>` +
+    `<span class="stat-item"><span class="stat-dot" style="background:#0d6e5a"></span>수강 ${nAt}개</span>`;
 }
 
 function groupByDate(items) {
   const by = {};
   items.forEach(e => { if(!by[e.date]) by[e.date] = []; by[e.date].push(e); });
   return by;
+}
+
+function detailHTML(e) {
+  let cells = "";
+  cells += `<div class="det-cell"><div class="det-k">교육기간</div><div class="det-v">${e.date} ${e.time} ~ ${e.end}</div></div>`;
+  cells += `<div class="det-cell"><div class="det-k">강사</div><div class="det-v">${e.teacher || "-"}</div></div>`;
+  cells += `<div class="det-cell"><div class="det-k">교육장소</div><div class="det-v">${e.place || "-"}</div></div>`;
+  cells += `<div class="det-cell"><div class="det-k">교육비</div><div class="det-v">무료</div></div>`;
+  if (e.target) cells += `<div class="det-cell full"><div class="det-k">추천대상</div><div class="det-v">${e.target}</div></div>`;
+  cells += `<div class="det-cell full"><div class="det-k">강의요약</div><div class="det-v">${e.summary}</div></div>`;
+  if (e.topics) cells += `<div class="det-cell full"><div class="det-k">세부주제</div><div class="det-v">${e.topics}</div></div>`;
+  const k = getKey(e);
+  const memo = (state[k] && state[k].memo) || "";
+  return `<div class="ec-detail">
+    <div class="det-grid">${cells}</div>
+    <div class="memo-wrap">
+      <div class="memo-label">📝 내 메모</div>
+      <textarea class="memo-area" data-key="${k}" placeholder="이 강의에 대한 메모를 남겨보세요">${memo}</textarea>
+      <div class="memo-status" data-memo-status="${k}"></div>
+    </div>
+  </div>`;
 }
 
 /* ---------- LIST VIEW ---------- */
@@ -285,26 +354,29 @@ function renderList(root) {
     html += `<div class="date-sec"><div class="date-hdr"><span class="date-lbl">${mo}.${dy} (${getDow(date)})</span><span class="date-count">${items.length}개</span><div class="date-line"></div></div>`;
     items.forEach(e => {
       const k = getKey(e), s = effState(e);
-      const cls = s.attended ? "s-attended" : (s.applied ? "s-applied" : "");
-      html += `<div class="ec ${cls}" data-key="${k}">
-        <div class="tblk">
-          <div class="ttime">${e.time}<br>${e.end}</div>
-          <div class="tdur">${getDur(e.time,e.end)}</div>
-          <div class="treg">신청<br>${e.reg}</div>
-        </div>
-        <div class="vdiv"></div>
-        <div class="ebody">
-          <div class="etitle">${e.title}</div>
-          <div class="edesc">${e.target}</div>
-          <div class="emeta">
-            <span class="badge b-type">${e.type==="특강"?"오픈특강":"오픈랩"}</span>
-            ${statusBadge(e.status)}
-            <div class="togs">
-              <button class="tog ${s.applied?"on-applied":""}" data-act="applied">${s.applied?"✓ ":""}신청</button>
-              <button class="tog ${s.attended?"on-attended":""}" data-act="attended">${s.attended?"✓ ":""}수강</button>
+      const isOpen = openCards[k];
+      html += `<div class="ec ${stateClass(s)}${isOpen?" open":""}" data-key="${k}">
+        <div class="ec-head" data-head="${k}">
+          <div class="tblk">
+            <div class="ttime">${e.time}<br>${e.end}</div>
+            <div class="tdur">${getDur(e.time,e.end)}</div>
+            <div class="treg">신청<br>${e.reg}</div>
+          </div>
+          <div class="vdiv"></div>
+          <div class="ebody">
+            <div class="etitle-row"><div class="etitle">${e.title}</div><span class="caret">▾</span></div>
+            <div class="emeta">
+              <span class="badge b-type">${e.type==="특강"?"오픈특강":"오픈랩"}</span>
+              ${statusBadge(e.status)}
+              <div class="togs">
+                <button class="tog ${s.applied?"on-applied":""}" data-act="applied">${s.applied?"✓ ":""}신청</button>
+                <button class="tog ${s.waitlisted?"on-waitlisted":""}" data-act="waitlisted">${s.waitlisted?"✓ ":""}대기</button>
+                <button class="tog ${s.attended?"on-attended":""}" data-act="attended">${s.attended?"✓ ":""}수강</button>
+              </div>
             </div>
           </div>
         </div>
+        ${detailHTML(e)}
       </div>`;
     });
     html += `</div>`;
@@ -314,9 +386,41 @@ function renderList(root) {
   root.querySelectorAll(".ec").forEach(el => {
     const k = el.dataset.key;
     const e = DATA.find(d => getKey(d) === k);
-    el.querySelectorAll(".tog").forEach(btn => {
-      btn.addEventListener("click", () => { toggle(e, btn.dataset.act); renderList(root); updateStats(); });
+    el.querySelector(".ec-head").addEventListener("click", (ev) => {
+      if (ev.target.closest(".tog")) return;
+      openCards[k] = !openCards[k];
+      el.classList.toggle("open", openCards[k]);
     });
+    el.querySelectorAll(".tog").forEach(btn => {
+      btn.addEventListener("click", (ev) => {
+        ev.stopPropagation();
+        toggle(e, btn.dataset.act);
+        const s = effState(e);
+        el.className = "ec " + stateClass(s) + (openCards[k]?" open":"");
+        btn.parentElement.querySelectorAll(".tog").forEach(b => {
+          const act = b.dataset.act;
+          b.className = "tog " + (s[act] ? "on-"+act : "");
+          b.textContent = (s[act]?"✓ ":"") + (act==="applied"?"신청":act==="waitlisted"?"대기":"수강");
+        });
+        updateStats();
+      });
+    });
+    const memoArea = el.querySelector(".memo-area");
+    if (memoArea) {
+      memoArea.addEventListener("click", ev => ev.stopPropagation());
+      memoArea.addEventListener("input", () => {
+        const cur = ensureState(e);
+        cur.memo = memoArea.value;
+        const statusEl = el.querySelector(`[data-memo-status="${k}"]`);
+        statusEl.textContent = "저장 중...";
+        clearTimeout(memoTimers[k]);
+        memoTimers[k] = setTimeout(async () => {
+          const ok = await saveState(k, cur);
+          statusEl.textContent = ok ? "저장됨 ✓" : "저장 실패";
+          setTimeout(() => { statusEl.textContent = ""; }, 2000);
+        }, 700);
+      });
+    }
   });
 }
 
@@ -365,11 +469,10 @@ function renderTimeline(root) {
       const top = (s - baseMin) / 60 * HOUR_PX;
       const hgt = (en - s) / 60 * HOUR_PX - 3;
       const st = effState(e);
-      const bcls = st.attended ? "b-attended" : (st.applied ? "b-applied" : "b-none");
       const leftPct = (col / ncol) * 100;
       const widthPct = (1 / ncol) * 100;
       const narrow = ncol > 1;
-      html += `<div class="tl-block ${bcls}" style="top:${top}px;height:${hgt}px;left:calc(${leftPct}% + 4px);width:calc(${widthPct}% - 8px)">
+      html += `<div class="tl-block ${blockClass(st)}" style="top:${top}px;height:${hgt}px;left:calc(${leftPct}% + 4px);width:calc(${widthPct}% - 8px)">
         <div class="bt" style="${narrow?"font-size:10px":""}">${e.title}</div>
         ${narrow?"":`<div class="btm">${e.time}~${e.end}</div>`}
       </div>`;
@@ -379,15 +482,15 @@ function renderTimeline(root) {
   root.innerHTML = (html || '<div class="empty">해당 조건의 교육이 없습니다.</div>') +
     `<div class="tl-legend" style="margin-top:16px">
       <span><span class="lg-dot" style="background:var(--purple-light);border-color:var(--purple)"></span>신청함</span>
+      <span><span class="lg-dot" style="background:var(--amber-light);border-color:var(--amber)"></span>대기</span>
       <span><span class="lg-dot" style="background:var(--teal-light);border-color:var(--teal)"></span>수강완료</span>
       <span><span class="lg-dot" style="background:var(--surface2);border-color:var(--border2)"></span>미신청</span>
-      <span style="color:var(--text3)">빈 칸 = 비어있는 시간 · 상태 변경은 목록 탭에서</span>
+      <span style="color:var(--text3)">빈 칸 = 비어있는 시간 · 상세/메모는 목록 탭에서</span>
     </div>`;
 }
 
 function render() {
   const root = document.getElementById("root");
-  document.getElementById("filter-row").style.display = "flex";
   if (view === "timeline") renderTimeline(root);
   else renderList(root);
   updateStats();
@@ -413,14 +516,15 @@ document.querySelectorAll("[data-s]").forEach(btn => {
 });
 
 document.getElementById("dl-btn").addEventListener("click", () => {
-  const rows = [["날짜","요일","시작","종료","유형","상태","신청기간","제목","대상","신청","수강"]];
+  const rows = [["날짜","요일","시작","종료","유형","상태","신청기간","제목","추천대상","강사","장소","강의요약","신청","대기","수강","메모"]];
   DATA.forEach(e => {
     const s = effState(e);
     rows.push([e.date, getDow(e.date), e.time, e.end,
       e.type==="특강"?"오픈특강":"오픈랩", e.status==="full"?"정원마감":"모집중", e.reg,
-      e.title, e.target, s.applied?"O":"", s.attended?"O":""]);
+      e.title, e.target, e.teacher, e.place, e.summary,
+      s.applied?"O":"", s.waitlisted?"O":"", s.attended?"O":"", s.memo||""]);
   });
-  const csv = "\uFEFF" + rows.map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(",")).join("\n");
+  const csv = "\uFEFF" + rows.map(r => r.map(c => `"${String(c).replace(/"/g,'""').replace(/\n/g," ")}"`).join(",")).join("\n");
   const a = document.createElement("a");
   a.href = URL.createObjectURL(new Blob([csv], {type:"text/csv;charset=utf-8"}));
   a.download = "바이오교육일정.csv";
