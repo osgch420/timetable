@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>바이오 교육 일정</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   :root {
     --bg: #f7f6f3;
@@ -33,11 +34,14 @@
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { background: var(--bg); color: var(--text); font-family: -apple-system, 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif; font-size: 14px; line-height: 1.6; min-height: 100vh; }
 
-  /* Header */
   .header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 20px 20px 0; position: sticky; top: 0; z-index: 100; }
   .header-top { display: flex; align-items: baseline; gap: 10px; margin-bottom: 14px; }
   .header-title { font-size: 17px; font-weight: 700; letter-spacing: -0.3px; }
   .header-sub { font-size: 12px; color: var(--text3); }
+  .sync-badge { margin-left: auto; font-size: 11px; padding: 3px 9px; border-radius: 999px; background: var(--surface2); color: var(--text3); display: flex; align-items: center; gap: 4px; }
+  .sync-badge.ok { background: var(--teal-light); color: var(--teal-text); }
+  .sync-badge.err { background: var(--red-light); color: var(--red-text); }
+  .sync-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
   .filter-row { display: flex; gap: 6px; flex-wrap: wrap; padding-bottom: 14px; align-items: center; }
   .fl { font-size: 11px; color: var(--text3); margin-right: 2px; flex-shrink: 0; }
   .sep { width: 1px; height: 14px; background: var(--border); margin: 0 4px; flex-shrink: 0; }
@@ -45,48 +49,39 @@
   .fb.on { background: var(--purple); color: #fff; border-color: var(--purple); }
   .fb:hover:not(.on) { border-color: var(--purple); color: var(--purple); }
 
-  /* Stats bar */
   .stats { display: flex; gap: 12px; padding: 10px 20px; background: var(--surface2); border-bottom: 1px solid var(--border); font-size: 11px; color: var(--text2); flex-wrap: wrap; }
   .stat-item { display: flex; align-items: center; gap: 4px; }
   .stat-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
 
-  /* Main */
   .main { max-width: 680px; margin: 0 auto; padding: 16px 16px 40px; }
 
-  /* Date section */
   .date-sec { margin-bottom: 20px; }
   .date-hdr { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; padding: 0 2px; }
   .date-lbl { font-size: 14px; font-weight: 700; color: var(--text); }
   .date-count { font-size: 11px; color: var(--text3); }
   .date-line { flex: 1; height: 1px; background: var(--border); }
 
-  /* Event card */
   .ec { display: flex; gap: 10px; align-items: flex-start; padding: 12px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface); margin-bottom: 6px; cursor: pointer; transition: border-color .15s, box-shadow .15s; -webkit-tap-highlight-color: transparent; user-select: none; }
   .ec:active { transform: scale(0.99); }
   .ec.is-checked { border-color: var(--purple); background: #faf9ff; }
   .ec.is-checked .etitle { text-decoration: line-through; color: var(--text3); }
 
-  /* Checkbox */
   .chkbox { width: 20px; height: 20px; border-radius: 5px; border: 1.5px solid var(--border2); display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; transition: all .15s; }
   .chkbox.on { background: var(--purple); border-color: var(--purple); }
   .chkbox.on::after { content: ""; display: block; width: 11px; height: 6px; border-left: 2px solid #fff; border-bottom: 2px solid #fff; transform: rotate(-45deg) translate(1px, -1px); }
 
-  /* Time block */
   .tblk { min-width: 80px; text-align: right; flex-shrink: 0; }
   .ttime { font-size: 12px; color: var(--text2); line-height: 1.5; font-variant-numeric: tabular-nums; }
   .tdur { font-size: 10px; color: var(--text3); }
   .treg { font-size: 10px; color: var(--text3); margin-top: 2px; line-height: 1.4; }
 
-  /* Divider */
   .vdiv { width: 1px; background: var(--border); align-self: stretch; flex-shrink: 0; }
 
-  /* Body */
   .ebody { flex: 1; min-width: 0; }
   .etitle { font-size: 13px; font-weight: 600; color: var(--text); line-height: 1.4; margin-bottom: 3px; word-break: keep-all; }
   .edesc { font-size: 11px; color: var(--text2); line-height: 1.5; }
   .emeta { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 6px; align-items: center; }
 
-  /* Badges */
   .badge { font-size: 10px; padding: 2px 7px; border-radius: 999px; font-weight: 500; white-space: nowrap; }
   .b-type { background: var(--purple-light); color: var(--purple-text); }
   .b-open { background: var(--green-light); color: var(--green-text); }
@@ -95,16 +90,13 @@
   .b-wait { background: var(--amber-light); color: var(--amber-text); }
   .b-seat { background: var(--surface2); color: var(--text2); }
 
-  /* Empty */
   .empty { text-align: center; color: var(--text3); font-size: 13px; padding: 40px 20px; }
 
-  /* Download */
   .dl-wrap { display: flex; justify-content: flex-end; margin-bottom: 16px; }
   .dl-btn { font-size: 12px; padding: 6px 14px; border-radius: 999px; border: 1px solid var(--border2); background: var(--surface); color: var(--text2); cursor: pointer; display: flex; align-items: center; gap: 5px; transition: all .15s; }
   .dl-btn:hover { border-color: var(--purple); color: var(--purple); }
   .dl-btn svg { width: 13px; height: 13px; }
 
-  /* Check summary */
   .check-bar { background: var(--purple-light); border-radius: 8px; padding: 8px 12px; margin-bottom: 14px; font-size: 12px; color: var(--purple-text); display: none; }
   .check-bar.show { display: block; }
 
@@ -123,6 +115,7 @@
   <div class="header-top">
     <span class="header-title">바이오 교육 일정</span>
     <span class="header-sub">인천대학교 오픈 교육 · 2025</span>
+    <span class="sync-badge" id="sync-badge"><span class="sync-dot"></span><span id="sync-text">연결 중...</span></span>
   </div>
   <div class="filter-row">
     <span class="fl">유형</span>
@@ -155,6 +148,10 @@
 </div>
 
 <script>
+const SUPABASE_URL = "https://fjwkmxjtwdbaflotlbzr.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZqd2tteGp0d2RiYWZsb3RsYnpyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE1MzE2OTEsImV4cCI6MjA5NzEwNzY5MX0.nAruLCivN5yTKu7myp0gzEnS9NtJMur4lsVo5GWOLSA";
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
 const DATA = [
   {date:"07.06",time:"09:00",end:"11:00",type:"특강",status:"done",title:"전기영동 입문 (공정개발 QC)",target:"바이오 관심 학부생·취준생",reg:"05.29~06.30",seats:"15/30"},
   {date:"07.06",time:"11:00",end:"13:00",type:"특강",status:"done",title:"mRNA Process Overview",target:"바이오 취준생·mRNA 모달 미경험 실무자",reg:"05.29~06.30",seats:"27/30"},
@@ -184,14 +181,37 @@ const DATA = [
   {date:"08.07",time:"09:00",end:"13:00",type:"랩",status:"open",title:"전기 영동 실습",target:"전기 영동 이론 수강자 우선·약 5인 1개조",reg:"07.20~07.31",seats:"0/30"},
 ];
 
-const STORE_KEY = "bio_edu_v2";
 let checked = {};
-try { checked = JSON.parse(localStorage.getItem(STORE_KEY) || "{}"); } catch(e) {}
 
-let fType = "all", fStatus = "all";
+function setSync(state, text) {
+  const badge = document.getElementById("sync-badge");
+  badge.className = "sync-badge" + (state ? " " + state : "");
+  document.getElementById("sync-text").textContent = text;
+}
 
-function saveChecked() {
-  try { localStorage.setItem(STORE_KEY, JSON.stringify(checked)); } catch(e) {}
+async function loadChecked() {
+  try {
+    const { data, error } = await sb.from("edu_checks").select("edu_key, checked");
+    if (error) throw error;
+    checked = {};
+    data.forEach(row => { if (row.checked) checked[row.edu_key] = true; });
+    setSync("ok", "동기화됨");
+  } catch (e) {
+    console.error("불러오기 실패:", e);
+    setSync("err", "연결 실패");
+  }
+}
+
+async function saveCheck(key, value) {
+  try {
+    const { error } = await sb.from("edu_checks")
+      .upsert({ edu_key: key, checked: value, updated_at: new Date().toISOString() });
+    if (error) throw error;
+    setSync("ok", "동기화됨");
+  } catch (e) {
+    console.error("저장 실패:", e);
+    setSync("err", "저장 실패");
+  }
 }
 
 function getKey(e) { return e.date + "_" + e.time + "_" + e.title.slice(0,10); }
@@ -214,7 +234,6 @@ function statusBadge(st) {
 }
 
 function updateStats() {
-  const total = DATA.length;
   const done = DATA.filter(e=>e.status==="done").length;
   const open = DATA.filter(e=>e.status==="open").length;
   const full = DATA.filter(e=>e.status==="full").length;
@@ -295,7 +314,7 @@ function render() {
     el.addEventListener("click", () => {
       const k = el.dataset.key;
       checked[k] = !checked[k];
-      saveChecked();
+      saveCheck(k, checked[k]);
       el.classList.toggle("is-checked", checked[k]);
       el.querySelector(".chkbox").classList.toggle("on", checked[k]);
       updateStats();
@@ -303,6 +322,8 @@ function render() {
   });
   updateStats();
 }
+
+let fType = "all", fStatus = "all";
 
 document.querySelectorAll("[data-f]").forEach(btn => {
   btn.addEventListener("click", () => {
@@ -336,7 +357,10 @@ document.getElementById("dl-btn").addEventListener("click", () => {
   a.click();
 });
 
-render();
+(async () => {
+  await loadChecked();
+  render();
+})();
 </script>
 </body>
 </html>
