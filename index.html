@@ -7,41 +7,31 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   :root {
-    --bg: #f7f6f3;
-    --surface: #ffffff;
-    --surface2: #f0efe9;
-    --border: #e2e0d8;
-    --border2: #cccab8;
-    --text: #1a1917;
-    --text2: #6b6960;
-    --text3: #a09d92;
-    --purple: #4a42b0;
-    --purple-light: #eeedfc;
-    --purple-text: #3730a3;
-    --green: #2d7d55;
-    --green-light: #e8f5ef;
-    --green-text: #1a5c3a;
-    --red: #b93333;
-    --red-light: #fceaea;
-    --red-text: #8b2020;
-    --amber: #9a6200;
-    --amber-light: #fdf3dc;
-    --amber-text: #7a4d00;
-    --teal: #0d6e5a;
-    --teal-light: #e0f5ef;
-    --teal-text: #085043;
+    --bg: #f7f6f3; --surface: #ffffff; --surface2: #f0efe9;
+    --border: #e2e0d8; --border2: #cccab8;
+    --text: #1a1917; --text2: #6b6960; --text3: #a09d92;
+    --purple: #4a42b0; --purple-light: #eeedfc; --purple-text: #3730a3;
+    --green: #2d7d55; --green-light: #e8f5ef; --green-text: #1a5c3a;
+    --red: #b93333; --red-light: #fceaea; --red-text: #8b2020;
+    --amber: #9a6200; --amber-light: #fdf3dc; --amber-text: #7a4d00;
+    --teal: #0d6e5a; --teal-light: #e0f5ef; --teal-text: #085043;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { background: var(--bg); color: var(--text); font-family: -apple-system, 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif; font-size: 14px; line-height: 1.6; min-height: 100vh; }
 
-  .header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 20px 20px 0; position: sticky; top: 0; z-index: 100; }
-  .header-top { display: flex; align-items: baseline; gap: 10px; margin-bottom: 14px; }
+  .header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 18px 20px 0; position: sticky; top: 0; z-index: 100; }
+  .header-top { display: flex; align-items: baseline; gap: 10px; margin-bottom: 12px; }
   .header-title { font-size: 17px; font-weight: 700; letter-spacing: -0.3px; }
   .header-sub { font-size: 12px; color: var(--text3); }
   .sync-badge { margin-left: auto; font-size: 11px; padding: 3px 9px; border-radius: 999px; background: var(--surface2); color: var(--text3); display: flex; align-items: center; gap: 4px; }
   .sync-badge.ok { background: var(--teal-light); color: var(--teal-text); }
   .sync-badge.err { background: var(--red-light); color: var(--red-text); }
   .sync-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+
+  .view-tabs { display: flex; gap: 4px; margin-bottom: 12px; }
+  .vt { font-size: 13px; padding: 6px 16px; border-radius: 8px; border: 1px solid var(--border2); background: var(--surface); color: var(--text2); cursor: pointer; transition: all .15s; -webkit-tap-highlight-color: transparent; }
+  .vt.on { background: var(--text); color: #fff; border-color: var(--text); }
+
   .filter-row { display: flex; gap: 6px; flex-wrap: wrap; padding-bottom: 14px; align-items: center; }
   .fl { font-size: 11px; color: var(--text3); margin-right: 2px; flex-shrink: 0; }
   .sep { width: 1px; height: 14px; background: var(--border); margin: 0 4px; flex-shrink: 0; }
@@ -49,61 +39,70 @@
   .fb.on { background: var(--purple); color: #fff; border-color: var(--purple); }
   .fb:hover:not(.on) { border-color: var(--purple); color: var(--purple); }
 
-  .stats { display: flex; gap: 12px; padding: 10px 20px; background: var(--surface2); border-bottom: 1px solid var(--border); font-size: 11px; color: var(--text2); flex-wrap: wrap; }
-  .stat-item { display: flex; align-items: center; gap: 4px; }
-  .stat-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+  .stats { display: flex; gap: 14px; padding: 10px 20px; background: var(--surface2); border-bottom: 1px solid var(--border); font-size: 12px; color: var(--text2); flex-wrap: wrap; }
+  .stat-item { display: flex; align-items: center; gap: 5px; }
+  .stat-dot { width: 8px; height: 8px; border-radius: 2px; flex-shrink: 0; }
 
   .main { max-width: 680px; margin: 0 auto; padding: 16px 16px 40px; }
 
-  .date-sec { margin-bottom: 20px; }
-  .date-hdr { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; padding: 0 2px; }
+  .date-sec { margin-bottom: 22px; }
+  .date-hdr { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; padding: 0 2px; }
   .date-lbl { font-size: 14px; font-weight: 700; color: var(--text); }
   .date-count { font-size: 11px; color: var(--text3); }
   .date-line { flex: 1; height: 1px; background: var(--border); }
 
-  .ec { display: flex; gap: 10px; align-items: flex-start; padding: 12px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface); margin-bottom: 6px; cursor: pointer; transition: border-color .15s, box-shadow .15s; -webkit-tap-highlight-color: transparent; user-select: none; }
-  .ec:active { transform: scale(0.99); }
-  .ec.is-checked { border-color: var(--purple); background: #faf9ff; }
-  .ec.is-checked .etitle { text-decoration: line-through; color: var(--text3); }
+  /* ---- LIST VIEW ---- */
+  .ec { display: flex; gap: 10px; align-items: stretch; padding: 12px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface); margin-bottom: 6px; transition: border-color .15s; }
+  .ec.s-applied { border-color: var(--purple); background: #faf9ff; }
+  .ec.s-attended { border-color: var(--teal); background: #f3fbf8; }
+  .ec.s-attended .etitle { color: var(--text2); }
 
-  .chkbox { width: 20px; height: 20px; border-radius: 5px; border: 1.5px solid var(--border2); display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; transition: all .15s; }
-  .chkbox.on { background: var(--purple); border-color: var(--purple); }
-  .chkbox.on::after { content: ""; display: block; width: 11px; height: 6px; border-left: 2px solid #fff; border-bottom: 2px solid #fff; transform: rotate(-45deg) translate(1px, -1px); }
-
-  .tblk { min-width: 80px; text-align: right; flex-shrink: 0; }
+  .tblk { min-width: 78px; text-align: right; flex-shrink: 0; }
   .ttime { font-size: 12px; color: var(--text2); line-height: 1.5; font-variant-numeric: tabular-nums; }
   .tdur { font-size: 10px; color: var(--text3); }
   .treg { font-size: 10px; color: var(--text3); margin-top: 2px; line-height: 1.4; }
-
-  .vdiv { width: 1px; background: var(--border); align-self: stretch; flex-shrink: 0; }
-
+  .vdiv { width: 1px; background: var(--border); flex-shrink: 0; }
   .ebody { flex: 1; min-width: 0; }
   .etitle { font-size: 13px; font-weight: 600; color: var(--text); line-height: 1.4; margin-bottom: 3px; word-break: keep-all; }
   .edesc { font-size: 11px; color: var(--text2); line-height: 1.5; }
-  .emeta { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 6px; align-items: center; }
+  .emeta { display: flex; gap: 5px; flex-wrap: wrap; margin-top: 8px; align-items: center; }
 
   .badge { font-size: 10px; padding: 2px 7px; border-radius: 999px; font-weight: 500; white-space: nowrap; }
   .b-type { background: var(--purple-light); color: var(--purple-text); }
   .b-open { background: var(--green-light); color: var(--green-text); }
-  .b-done { background: var(--teal-light); color: var(--teal-text); }
   .b-full { background: var(--red-light); color: var(--red-text); }
-  .b-wait { background: var(--amber-light); color: var(--amber-text); }
-  .b-seat { background: var(--surface2); color: var(--text2); }
+
+  .togs { display: flex; gap: 6px; margin-left: 4px; }
+  .tog { font-size: 11px; padding: 3px 10px; border-radius: 999px; border: 1px solid var(--border2); background: var(--surface); color: var(--text2); cursor: pointer; transition: all .15s; display: flex; align-items: center; gap: 3px; -webkit-tap-highlight-color: transparent; user-select: none; }
+  .tog.on-applied { background: var(--purple); border-color: var(--purple); color: #fff; }
+  .tog.on-attended { background: var(--teal); border-color: var(--teal); color: #fff; }
 
   .empty { text-align: center; color: var(--text3); font-size: 13px; padding: 40px 20px; }
 
-  .dl-wrap { display: flex; justify-content: flex-end; margin-bottom: 16px; }
+  .dl-wrap { display: flex; justify-content: flex-end; margin-bottom: 14px; }
   .dl-btn { font-size: 12px; padding: 6px 14px; border-radius: 999px; border: 1px solid var(--border2); background: var(--surface); color: var(--text2); cursor: pointer; display: flex; align-items: center; gap: 5px; transition: all .15s; }
   .dl-btn:hover { border-color: var(--purple); color: var(--purple); }
   .dl-btn svg { width: 13px; height: 13px; }
 
-  .check-bar { background: var(--purple-light); border-radius: 8px; padding: 8px 12px; margin-bottom: 14px; font-size: 12px; color: var(--purple-text); display: none; }
-  .check-bar.show { display: block; }
+  /* ---- TIMELINE VIEW ---- */
+  .tl-wrap { position: relative; margin-left: 2px; }
+  .tl-area { position: relative; margin-left: 42px; border-left: 1.5px solid var(--border); }
+  .tl-hour { position: absolute; left: -42px; width: 38px; text-align: right; font-size: 10px; color: var(--text3); transform: translateY(-50%); font-variant-numeric: tabular-nums; }
+  .tl-line { position: absolute; left: 0; right: 0; height: 1px; background: var(--border); opacity: 0.6; }
+  .tl-block { position: absolute; border-radius: 6px; padding: 4px 7px; overflow: hidden; font-size: 11px; line-height: 1.3; border: 1px solid transparent; }
+  .tl-block.b-none { background: var(--surface2); color: var(--text2); border-color: var(--border2); }
+  .tl-block.b-applied { background: var(--purple-light); color: var(--purple-text); border-color: var(--purple); }
+  .tl-block.b-attended { background: var(--teal-light); color: var(--teal-text); border-color: var(--teal); }
+  .tl-block .bt { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .tl-block .btm { font-size: 9px; opacity: 0.8; font-variant-numeric: tabular-nums; }
+  .tl-legend { display: flex; gap: 12px; font-size: 11px; color: var(--text2); margin-bottom: 14px; flex-wrap: wrap; }
+  .tl-legend span { display: flex; align-items: center; gap: 4px; }
+  .lg-dot { width: 10px; height: 10px; border-radius: 3px; border: 1px solid; }
 
   @media (max-width: 480px) {
     .header { padding: 14px 14px 0; }
     .main { padding: 12px 10px 40px; }
-    .tblk { min-width: 70px; }
+    .tblk { min-width: 66px; }
     .ec { padding: 10px; gap: 8px; }
     .etitle { font-size: 12px; }
   }
@@ -114,28 +113,30 @@
 <div class="header">
   <div class="header-top">
     <span class="header-title">바이오 교육 일정</span>
-    <span class="header-sub">인천대학교 오픈 교육 · 2025</span>
+    <span class="header-sub">인천대학교 오픈 교육</span>
     <span class="sync-badge" id="sync-badge"><span class="sync-dot"></span><span id="sync-text">연결 중...</span></span>
   </div>
-  <div class="filter-row">
+  <div class="view-tabs">
+    <button class="vt on" data-v="timeline">타임라인</button>
+    <button class="vt" data-v="list">목록</button>
+  </div>
+  <div class="filter-row" id="filter-row">
     <span class="fl">유형</span>
     <button class="fb on" data-f="all">전체</button>
     <button class="fb" data-f="특강">오픈특강</button>
     <button class="fb" data-f="랩">오픈랩</button>
     <div class="sep"></div>
-    <span class="fl">상태</span>
+    <span class="fl">내 상태</span>
     <button class="fb on" data-s="all">전체</button>
-    <button class="fb" data-s="open">모집중</button>
-    <button class="fb" data-s="done">신청완료</button>
-    <button class="fb" data-s="wait">대기신청</button>
-    <button class="fb" data-s="full">정원마감</button>
+    <button class="fb" data-s="applied">신청함</button>
+    <button class="fb" data-s="attended">수강완료</button>
+    <button class="fb" data-s="none">미신청</button>
   </div>
 </div>
 
 <div class="stats" id="stats-bar"></div>
 
 <div class="main">
-  <div class="check-bar" id="check-bar"></div>
   <div class="dl-wrap">
     <button class="dl-btn" id="dl-btn">
       <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5">
@@ -151,50 +152,52 @@
 const SUPABASE_URL = "https://fjwkmxjtwdbaflotlbzr.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZqd2tteGp0d2RiYWZsb3RsYnpyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE1MzE2OTEsImV4cCI6MjA5NzEwNzY5MX0.nAruLCivN5yTKu7myp0gzEnS9NtJMur4lsVo5GWOLSA";
 const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const YEAR = 2026;
 
 const DATA = [
-  {date:"07.06",time:"09:00",end:"11:00",type:"특강",status:"done",title:"전기영동 입문 (공정개발 QC)",target:"바이오 관심 학부생·취준생",reg:"05.29~06.30",seats:"15/30"},
-  {date:"07.06",time:"11:00",end:"13:00",type:"특강",status:"done",title:"mRNA Process Overview",target:"바이오 취준생·mRNA 모달 미경험 실무자",reg:"05.29~06.30",seats:"27/30"},
-  {date:"07.06",time:"14:00",end:"16:00",type:"특강",status:"done",title:"Formulation & Filling을 통한 완제공정의 이해",target:"취준생·1~2년차 신입",reg:"06.01~06.30",seats:"21/30"},
-  {date:"07.06",time:"16:00",end:"18:00",type:"특강",status:"done",title:"바이오 업계 취업 FAQ & Q&A 및 외국계 기업 특징 안내",target:"바이오 업계 취준생·외국계 기업 희망자",reg:"06.01~06.30",seats:"22/30"},
-  {date:"07.13",time:"09:00",end:"11:00",type:"특강",status:"done",title:"바이오제약사 부서소개",target:"바이오 취준생",reg:"05.31~06.30",seats:"19/30"},
-  {date:"07.13",time:"11:00",end:"13:00",type:"특강",status:"done",title:"바이오제약사의 고과평가",target:"바이오 취준생·1년 미만 고과 평가 미경험자",reg:"05.31~06.30",seats:"18/30"},
-  {date:"07.13",time:"14:00",end:"16:00",type:"특강",status:"done",title:"무균(Aseptic)·멸균(Sterilization)의 실무 적용",target:"바이오 기반 지식 있는 취준생·신입 3년차",reg:"06.01~06.30",seats:"21/30"},
-  {date:"07.13",time:"16:00",end:"18:00",type:"특강",status:"done",title:"실무 예시를 통한 Deviation과 Root cause analysis",target:"바이오 기반 지식 있는 취준생·신입 3년차",reg:"06.01~06.30",seats:"21/30"},
-  {date:"07.19",time:"09:00",end:"11:00",type:"특강",status:"done",title:"벤처투자자 입장에서의 바이오 시장 해석",target:"바이오 취준생",reg:"06.01~06.30",seats:"19/30"},
-  {date:"07.19",time:"11:00",end:"13:00",type:"특강",status:"done",title:"신입사원이 이야기하는 실무 - 배양",target:"바이오 취준생 & 1년 이하 신입",reg:"06.01~06.30",seats:"25/30"},
-  {date:"07.19",time:"14:00",end:"16:00",type:"특강",status:"done",title:"바이오 배양 공정의 이해 - PD to GMP",target:"재학생·취준생",reg:"06.05~06.30",seats:"27/30"},
-  {date:"07.19",time:"16:00",end:"18:00",type:"특강",status:"done",title:"MSAT 업무의 이해 - 실무 Scale up 고려사항",target:"바이오 취준생·바이오 공정 교육 기수료자",reg:"06.04~06.30",seats:"24/30"},
-  {date:"07.25",time:"09:00",end:"13:00",type:"특강",status:"full",title:"GMP 규정의 실무 적용",target:"바이오 취준생",reg:"05.29~06.30",seats:"30/30·대기8"},
-  {date:"07.25",time:"14:00",end:"16:00",type:"특강",status:"full",title:"자소서 및 면접 준비 특강",target:"누구나",reg:"05.29~06.30",seats:"30/30·대기9"},
-  {date:"07.25",time:"16:00",end:"18:00",type:"특강",status:"full",title:"Modality 별 제약사의 특징",target:"바이오 취준생",reg:"05.29~06.30",seats:"30/30·대기4"},
-  {date:"07.26",time:"09:00",end:"11:00",type:"특강",status:"full",title:"GMP 실사 수검 전략 및 사례",target:"바이오 취준생·2년차 이하 실사 무경험 재직자",reg:"05.29~06.30",seats:"30/30·대기2"},
-  {date:"07.26",time:"11:00",end:"13:00",type:"특강",status:"full",title:"GMP 관련 필수 핵심 용어 정리",target:"바이오 취준생·1년 미만 신입급 현업자",reg:"06.01~06.30",seats:"30/30·대기2"},
-  {date:"07.26",time:"14:00",end:"18:00",type:"특강",status:"done",title:"GMP QC 개론 - 이론",target:"바이오 취준생 및 신입급",reg:"05.31~06.30",seats:"29/30"},
-  {date:"08.01",time:"09:00",end:"13:00",type:"랩",status:"open",title:"Buffer & sample prep 실습 (for Chrom. run)",target:"학부생·취준생 등",reg:"06.30~07.30",seats:"0/30"},
-  {date:"08.01",time:"14:00",end:"18:00",type:"랩",status:"open",title:"Aseptic process fluid transfer 실습",target:"취준생 (상세 내용 확인)",reg:"06.30~07.30",seats:"0/30"},
-  {date:"08.02",time:"09:00",end:"13:00",type:"랩",status:"open",title:"공정 크로마토그래피 실습 - 1ml column",target:"학부생·취준생 (크로마토그래피 이론 선행)",reg:"06.30~07.30",seats:"0/20"},
-  {date:"08.02",time:"14:00",end:"18:00",type:"랩",status:"open",title:"공정 크로마토그래피 실습 - XK16/20 run",target:"크로마토그래피 강의 수강 이력자·1ml packing 경험자",reg:"06.30~07.30",seats:"0/10"},
-  {date:"08.04",time:"09:00",end:"13:00",type:"랩",status:"open",title:"UF/DF manual kit (CFF system) 조립 실습",target:"학부생·취준생 등 저연차 QA 등 실무자",reg:"06.30~07.30",seats:"0/30"},
-  {date:"08.04",time:"14:00",end:"18:00",type:"랩",status:"open",title:"Filter Integrity test 실습 (Manual & 장비)",target:"학부생·취준생·JR급 FIT 실무자",reg:"06.30~07.30",seats:"0/30"},
-  {date:"08.06",time:"10:00",end:"13:00",type:"랩",status:"open",title:"인천대 학생 전용 Pilot Process Simulation 실습1",target:"인천대학교 재학생 (바이오 공정 이해 필요)",reg:"07.01~07.15",seats:"0/20"},
-  {date:"08.07",time:"09:00",end:"13:00",type:"랩",status:"open",title:"전기 영동 실습",target:"전기 영동 이론 수강자 우선·약 5인 1개조",reg:"07.20~07.31",seats:"0/30"},
+  {date:"07.06",time:"09:00",end:"11:00",type:"특강",status:"open",title:"전기영동 입문 (공정개발 QC)",target:"바이오 관심 학부생·취준생",reg:"05.29~06.30"},
+  {date:"07.06",time:"11:00",end:"13:00",type:"특강",status:"open",title:"mRNA Process Overview",target:"바이오 취준생·mRNA 모달 미경험 실무자",reg:"05.29~06.30"},
+  {date:"07.06",time:"14:00",end:"16:00",type:"특강",status:"open",title:"Formulation & Filling을 통한 완제공정의 이해",target:"취준생·1~2년차 신입",reg:"06.01~06.30"},
+  {date:"07.06",time:"16:00",end:"18:00",type:"특강",status:"open",title:"바이오 업계 취업 FAQ & Q&A 및 외국계 기업 특징 안내",target:"바이오 업계 취준생·외국계 기업 희망자",reg:"06.01~06.30"},
+  {date:"07.13",time:"09:00",end:"11:00",type:"특강",status:"open",title:"바이오제약사 부서소개",target:"바이오 취준생",reg:"05.31~06.30"},
+  {date:"07.13",time:"11:00",end:"13:00",type:"특강",status:"open",title:"바이오제약사의 고과평가",target:"바이오 취준생·1년 미만 고과 평가 미경험자",reg:"05.31~06.30"},
+  {date:"07.13",time:"14:00",end:"16:00",type:"특강",status:"open",title:"무균(Aseptic)·멸균(Sterilization)의 실무 적용",target:"바이오 기반 지식 있는 취준생·신입 3년차",reg:"06.01~06.30"},
+  {date:"07.13",time:"16:00",end:"18:00",type:"특강",status:"open",title:"실무 예시를 통한 Deviation과 Root cause analysis",target:"바이오 기반 지식 있는 취준생·신입 3년차",reg:"06.01~06.30"},
+  {date:"07.19",time:"09:00",end:"11:00",type:"특강",status:"open",title:"벤처투자자 입장에서의 바이오 시장 해석",target:"바이오 취준생",reg:"06.01~06.30"},
+  {date:"07.19",time:"11:00",end:"13:00",type:"특강",status:"open",title:"신입사원이 이야기하는 실무 - 배양",target:"바이오 취준생 & 1년 이하 신입",reg:"06.01~06.30"},
+  {date:"07.19",time:"14:00",end:"16:00",type:"특강",status:"open",title:"바이오 배양 공정의 이해 - PD to GMP",target:"재학생·취준생",reg:"06.05~06.30"},
+  {date:"07.19",time:"16:00",end:"18:00",type:"특강",status:"open",title:"MSAT 업무의 이해 - 실무 Scale up 고려사항",target:"바이오 취준생·바이오 공정 교육 기수료자",reg:"06.04~06.30"},
+  {date:"07.25",time:"09:00",end:"13:00",type:"특강",status:"full",title:"GMP 규정의 실무 적용",target:"바이오 취준생",reg:"05.29~06.30"},
+  {date:"07.25",time:"14:00",end:"16:00",type:"특강",status:"full",title:"자소서 및 면접 준비 특강",target:"누구나",reg:"05.29~06.30"},
+  {date:"07.25",time:"16:00",end:"18:00",type:"특강",status:"full",title:"Modality 별 제약사의 특징",target:"바이오 취준생",reg:"05.29~06.30"},
+  {date:"07.26",time:"09:00",end:"11:00",type:"특강",status:"full",title:"GMP 실사 수검 전략 및 사례",target:"바이오 취준생·2년차 이하 실사 무경험 재직자",reg:"05.29~06.30"},
+  {date:"07.26",time:"11:00",end:"13:00",type:"특강",status:"full",title:"GMP 관련 필수 핵심 용어 정리",target:"바이오 취준생·1년 미만 신입급 현업자",reg:"06.01~06.30"},
+  {date:"07.26",time:"14:00",end:"18:00",type:"특강",status:"open",title:"GMP QC 개론 - 이론",target:"바이오 취준생 및 신입급",reg:"05.31~06.30"},
+  {date:"08.01",time:"09:00",end:"13:00",type:"랩",status:"open",title:"Buffer & sample prep 실습 (for Chrom. run)",target:"학부생·취준생 등",reg:"06.30~07.30"},
+  {date:"08.01",time:"14:00",end:"18:00",type:"랩",status:"open",title:"Aseptic process fluid transfer 실습",target:"취준생 (상세 내용 확인)",reg:"06.30~07.30"},
+  {date:"08.02",time:"09:00",end:"13:00",type:"랩",status:"open",title:"공정 크로마토그래피 실습 - 1ml column",target:"학부생·취준생 (크로마토그래피 이론 선행)",reg:"06.30~07.30"},
+  {date:"08.02",time:"14:00",end:"18:00",type:"랩",status:"open",title:"공정 크로마토그래피 실습 - XK16/20 run",target:"크로마토그래피 강의 수강 이력자·1ml packing 경험자",reg:"06.30~07.30"},
+  {date:"08.04",time:"09:00",end:"13:00",type:"랩",status:"open",title:"UF/DF manual kit (CFF system) 조립 실습",target:"학부생·취준생 등 저연차 QA 등 실무자",reg:"06.30~07.30"},
+  {date:"08.04",time:"14:00",end:"18:00",type:"랩",status:"open",title:"Filter Integrity test 실습 (Manual & 장비)",target:"학부생·취준생·JR급 FIT 실무자",reg:"06.30~07.30"},
+  {date:"08.06",time:"10:00",end:"13:00",type:"랩",status:"open",title:"인천대 학생 전용 Pilot Process Simulation 실습1",target:"인천대학교 재학생 (바이오 공정 이해 필요)",reg:"07.01~07.15"},
+  {date:"08.07",time:"09:00",end:"13:00",type:"랩",status:"open",title:"전기 영동 실습",target:"전기 영동 이론 수강자 우선·약 5인 1개조",reg:"07.20~07.31"},
 ];
 
-let checked = {};
+let state = {};
+let fType = "all", fStatus = "all", view = "timeline";
 
-function setSync(state, text) {
-  const badge = document.getElementById("sync-badge");
-  badge.className = "sync-badge" + (state ? " " + state : "");
-  document.getElementById("sync-text").textContent = text;
+function setSync(s, t) {
+  const b = document.getElementById("sync-badge");
+  b.className = "sync-badge" + (s ? " " + s : "");
+  document.getElementById("sync-text").textContent = t;
 }
 
-async function loadChecked() {
+async function loadState() {
   try {
-    const { data, error } = await sb.from("edu_checks").select("edu_key, checked");
+    const { data, error } = await sb.from("edu_checks").select("edu_key, applied, attended");
     if (error) throw error;
-    checked = {};
-    data.forEach(row => { if (row.checked) checked[row.edu_key] = true; });
+    state = {};
+    data.forEach(r => { state[r.edu_key] = { applied: !!r.applied, attended: !!r.attended }; });
     setSync("ok", "동기화됨");
   } catch (e) {
     console.error("불러오기 실패:", e);
@@ -202,10 +205,10 @@ async function loadChecked() {
   }
 }
 
-async function saveCheck(key, value) {
+async function saveState(key, st) {
   try {
     const { error } = await sb.from("edu_checks")
-      .upsert({ edu_key: key, checked: value, updated_at: new Date().toISOString() });
+      .upsert({ edu_key: key, applied: st.applied, attended: st.attended, updated_at: new Date().toISOString() });
     if (error) throw error;
     setSync("ok", "동기화됨");
   } catch (e) {
@@ -216,79 +219,74 @@ async function saveCheck(key, value) {
 
 function getKey(e) { return e.date + "_" + e.time + "_" + e.title.slice(0,10); }
 
+function effState(e) {
+  const k = getKey(e);
+  if (state[k]) return state[k];
+  return { applied: e.date.startsWith("07"), attended: false };
+}
+
+function toggle(e, field) {
+  const k = getKey(e);
+  const cur = state[k] ? { ...state[k] } : { applied: e.date.startsWith("07"), attended: false };
+  cur[field] = !cur[field];
+  state[k] = cur;
+  saveState(k, cur);
+}
+
 function getDow(ds) {
   const [m,d] = ds.split(".").map(Number);
-  return ["일","월","화","수","목","금","토"][new Date(2025,m-1,d).getDay()];
+  return ["일","월","화","수","목","금","토"][new Date(YEAR,m-1,d).getDay()];
 }
-function getDur(s,e) {
-  const [sh,sm] = s.split(":").map(Number);
-  const [eh,em] = e.split(":").map(Number);
-  const mins = (eh*60+em)-(sh*60+sm);
-  return mins >= 60 ? mins/60+"h" : mins+"m";
-}
+function toMin(t) { const [h,m] = t.split(":").map(Number); return h*60+m; }
+function getDur(s,e) { const mins = toMin(e)-toMin(s); return mins >= 60 ? mins/60+"h" : mins+"m"; }
+
 function statusBadge(st) {
-  if(st==="done") return '<span class="badge b-done">신청완료</span>';
   if(st==="full") return '<span class="badge b-full">정원마감</span>';
-  if(st==="wait") return '<span class="badge b-wait">대기신청</span>';
   return '<span class="badge b-open">모집중</span>';
 }
 
-function updateStats() {
-  const done = DATA.filter(e=>e.status==="done").length;
-  const open = DATA.filter(e=>e.status==="open").length;
-  const full = DATA.filter(e=>e.status==="full").length;
-  const myChecked = Object.values(checked).filter(Boolean).length;
-  document.getElementById("stats-bar").innerHTML =
-    `<span class="stat-item"><span class="stat-dot" style="background:#0d6e5a"></span>신청완료 ${done}개</span>` +
-    `<span class="stat-item"><span class="stat-dot" style="background:#2d7d55"></span>모집중 ${open}개</span>` +
-    `<span class="stat-item"><span class="stat-dot" style="background:#b93333"></span>정원마감 ${full}개</span>` +
-    `<span class="stat-item" style="margin-left:auto;color:#4a42b0;font-weight:600">✓ 내 체크 ${myChecked}개</span>`;
-
-  const bar = document.getElementById("check-bar");
-  if(myChecked > 0) {
-    const titles = DATA.filter(e=>checked[getKey(e)]).map(e=>e.title);
-    bar.className = "check-bar show";
-    bar.textContent = "✓ 신청 체크: " + titles.join(", ");
-  } else {
-    bar.className = "check-bar";
-  }
-}
-
-function render() {
-  const root = document.getElementById("root");
-  const filtered = DATA.filter(e => {
+function filtered() {
+  return DATA.filter(e => {
     const tm = fType === "all" || e.type === fType;
-    const sm = fStatus === "all" || e.status === fStatus;
+    let sm = true;
+    if (fStatus !== "all") {
+      const s = effState(e);
+      if (fStatus === "applied") sm = s.applied && !s.attended;
+      else if (fStatus === "attended") sm = s.attended;
+      else if (fStatus === "none") sm = !s.applied && !s.attended;
+    }
     return tm && sm;
   });
+}
 
-  if(!filtered.length) {
-    root.innerHTML = '<div class="empty">해당 조건의 교육이 없습니다.</div>';
-    return;
-  }
+function updateStats() {
+  const total = DATA.length;
+  let nApplied = 0, nAttended = 0;
+  DATA.forEach(e => { const s = effState(e); if(s.attended) nAttended++; else if(s.applied) nApplied++; });
+  document.getElementById("stats-bar").innerHTML =
+    `<span class="stat-item"><span class="stat-dot" style="background:#cccab8"></span>전체 ${total}개</span>` +
+    `<span class="stat-item"><span class="stat-dot" style="background:#4a42b0"></span>신청함 ${nApplied}개</span>` +
+    `<span class="stat-item"><span class="stat-dot" style="background:#0d6e5a"></span>수강완료 ${nAttended}개</span>`;
+}
 
-  const byDate = {};
-  filtered.forEach(e => {
-    if(!byDate[e.date]) byDate[e.date] = [];
-    byDate[e.date].push(e);
-  });
+function groupByDate(items) {
+  const by = {};
+  items.forEach(e => { if(!by[e.date]) by[e.date] = []; by[e.date].push(e); });
+  return by;
+}
 
+/* ---------- LIST VIEW ---------- */
+function renderList(root) {
+  const by = groupByDate(filtered());
   let html = "";
-  Object.keys(byDate).sort().forEach(date => {
-    const dow = getDow(date);
-    const items = byDate[date].sort((a,b) => a.time.localeCompare(b.time));
+  Object.keys(by).sort().forEach(date => {
+    const items = by[date].sort((a,b) => a.time.localeCompare(b.time));
     const [mo, dy] = date.split(".");
-    html += `<div class="date-sec">
-      <div class="date-hdr">
-        <span class="date-lbl">${mo}.${dy} (${dow})</span>
-        <span class="date-count">${items.length}개</span>
-        <div class="date-line"></div>
-      </div>`;
+    html += `<div class="date-sec"><div class="date-hdr"><span class="date-lbl">${mo}.${dy} (${getDow(date)})</span><span class="date-count">${items.length}개</span><div class="date-line"></div></div>`;
     items.forEach(e => {
-      const k = getKey(e);
-      const isC = !!checked[k];
-      html += `<div class="ec${isC?" is-checked":""}" data-key="${k}">
-        <div class="chkbox${isC?" on":""}"></div>
+      const k = getKey(e), s = effState(e);
+      const cls = s.attended ? "s-attended" : (s.applied ? "s-applied" : "");
+      html += `<div class="ec ${cls}" data-key="${k}">
         <div class="tblk">
           <div class="ttime">${e.time}<br>${e.end}</div>
           <div class="tdur">${getDur(e.time,e.end)}</div>
@@ -301,54 +299,126 @@ function render() {
           <div class="emeta">
             <span class="badge b-type">${e.type==="특강"?"오픈특강":"오픈랩"}</span>
             ${statusBadge(e.status)}
-            <span class="badge b-seat">${e.seats}</span>
+            <div class="togs">
+              <button class="tog ${s.applied?"on-applied":""}" data-act="applied">${s.applied?"✓ ":""}신청</button>
+              <button class="tog ${s.attended?"on-attended":""}" data-act="attended">${s.attended?"✓ ":""}수강</button>
+            </div>
           </div>
         </div>
       </div>`;
     });
     html += `</div>`;
   });
-  root.innerHTML = html;
+  root.innerHTML = html || '<div class="empty">해당 조건의 교육이 없습니다.</div>';
 
   root.querySelectorAll(".ec").forEach(el => {
-    el.addEventListener("click", () => {
-      const k = el.dataset.key;
-      checked[k] = !checked[k];
-      saveCheck(k, checked[k]);
-      el.classList.toggle("is-checked", checked[k]);
-      el.querySelector(".chkbox").classList.toggle("on", checked[k]);
-      updateStats();
+    const k = el.dataset.key;
+    const e = DATA.find(d => getKey(d) === k);
+    el.querySelectorAll(".tog").forEach(btn => {
+      btn.addEventListener("click", () => { toggle(e, btn.dataset.act); renderList(root); updateStats(); });
     });
   });
+}
+
+/* ---------- TIMELINE VIEW ---------- */
+const HOUR_PX = 54, START_H = 9, END_H = 18;
+
+function layoutDay(items) {
+  const evs = items.map(e => ({ e, s: toMin(e.time), en: toMin(e.end) }))
+    .sort((a,b) => a.s - b.s || a.en - b.en);
+  let groups = [], cur = [], curEnd = -1;
+  evs.forEach(ev => {
+    if (cur.length && ev.s >= curEnd) { groups.push(cur); cur = []; curEnd = -1; }
+    cur.push(ev); curEnd = Math.max(curEnd, ev.en);
+  });
+  if (cur.length) groups.push(cur);
+  groups.forEach(g => {
+    let cols = [];
+    g.forEach(ev => {
+      let placed = false;
+      for (let i = 0; i < cols.length; i++) {
+        if (ev.s >= cols[i]) { ev.col = i; cols[i] = ev.en; placed = true; break; }
+      }
+      if (!placed) { ev.col = cols.length; cols.push(ev.en); }
+    });
+    g.forEach(ev => ev.ncol = cols.length);
+  });
+  return evs;
+}
+
+function renderTimeline(root) {
+  const by = groupByDate(filtered());
+  const baseMin = START_H * 60;
+  const totalPx = (END_H - START_H) * HOUR_PX;
+  let html = "";
+  Object.keys(by).sort().forEach(date => {
+    const [mo, dy] = date.split(".");
+    const laid = layoutDay(by[date]);
+    html += `<div class="date-sec"><div class="date-hdr"><span class="date-lbl">${mo}.${dy} (${getDow(date)})</span><span class="date-count">${by[date].length}개</span><div class="date-line"></div></div>`;
+    html += `<div class="tl-wrap"><div class="tl-area" style="height:${totalPx}px">`;
+    for (let h = START_H; h <= END_H; h++) {
+      const top = (h - START_H) * HOUR_PX;
+      html += `<div class="tl-hour" style="top:${top}px">${String(h).padStart(2,"0")}:00</div>`;
+      html += `<div class="tl-line" style="top:${top}px"></div>`;
+    }
+    laid.forEach(({e, s, en, col, ncol}) => {
+      const top = (s - baseMin) / 60 * HOUR_PX;
+      const hgt = (en - s) / 60 * HOUR_PX - 3;
+      const st = effState(e);
+      const bcls = st.attended ? "b-attended" : (st.applied ? "b-applied" : "b-none");
+      const leftPct = (col / ncol) * 100;
+      const widthPct = (1 / ncol) * 100;
+      const narrow = ncol > 1;
+      html += `<div class="tl-block ${bcls}" style="top:${top}px;height:${hgt}px;left:calc(${leftPct}% + 4px);width:calc(${widthPct}% - 8px)">
+        <div class="bt" style="${narrow?"font-size:10px":""}">${e.title}</div>
+        ${narrow?"":`<div class="btm">${e.time}~${e.end}</div>`}
+      </div>`;
+    });
+    html += `</div></div>`;
+  });
+  root.innerHTML = (html || '<div class="empty">해당 조건의 교육이 없습니다.</div>') +
+    `<div class="tl-legend" style="margin-top:16px">
+      <span><span class="lg-dot" style="background:var(--purple-light);border-color:var(--purple)"></span>신청함</span>
+      <span><span class="lg-dot" style="background:var(--teal-light);border-color:var(--teal)"></span>수강완료</span>
+      <span><span class="lg-dot" style="background:var(--surface2);border-color:var(--border2)"></span>미신청</span>
+      <span style="color:var(--text3)">빈 칸 = 비어있는 시간 · 상태 변경은 목록 탭에서</span>
+    </div>`;
+}
+
+function render() {
+  const root = document.getElementById("root");
+  document.getElementById("filter-row").style.display = "flex";
+  if (view === "timeline") renderTimeline(root);
+  else renderList(root);
   updateStats();
 }
 
-let fType = "all", fStatus = "all";
-
+document.querySelectorAll("[data-v]").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll("[data-v]").forEach(b => b.classList.remove("on"));
+    btn.classList.add("on"); view = btn.dataset.v; render();
+  });
+});
 document.querySelectorAll("[data-f]").forEach(btn => {
   btn.addEventListener("click", () => {
     document.querySelectorAll("[data-f]").forEach(b => b.classList.remove("on"));
-    btn.classList.add("on");
-    fType = btn.dataset.f;
-    render();
+    btn.classList.add("on"); fType = btn.dataset.f; render();
   });
 });
 document.querySelectorAll("[data-s]").forEach(btn => {
   btn.addEventListener("click", () => {
     document.querySelectorAll("[data-s]").forEach(b => b.classList.remove("on"));
-    btn.classList.add("on");
-    fStatus = btn.dataset.s;
-    render();
+    btn.classList.add("on"); fStatus = btn.dataset.s; render();
   });
 });
 
 document.getElementById("dl-btn").addEventListener("click", () => {
-  const rows = [["날짜","요일","시작","종료","유형","상태","신청기간","정원","제목","대상","내 체크"]];
+  const rows = [["날짜","요일","시작","종료","유형","상태","신청기간","제목","대상","신청","수강"]];
   DATA.forEach(e => {
-    const k = getKey(e);
+    const s = effState(e);
     rows.push([e.date, getDow(e.date), e.time, e.end,
-      e.type==="특강"?"오픈특강":"오픈랩", e.status, e.reg, e.seats,
-      e.title, e.target, checked[k]?"✓":""]);
+      e.type==="특강"?"오픈특강":"오픈랩", e.status==="full"?"정원마감":"모집중", e.reg,
+      e.title, e.target, s.applied?"O":"", s.attended?"O":""]);
   });
   const csv = "\uFEFF" + rows.map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(",")).join("\n");
   const a = document.createElement("a");
@@ -357,10 +427,7 @@ document.getElementById("dl-btn").addEventListener("click", () => {
   a.click();
 });
 
-(async () => {
-  await loadChecked();
-  render();
-})();
+(async () => { await loadState(); render(); })();
 </script>
 </body>
 </html>
